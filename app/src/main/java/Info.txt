@@ -1,0 +1,10 @@
+http://stackoverflow.com/a/3622417
+https://stackoverflow.com/questions/526046/receive-sms-messages-by-web-application
+https://stackoverflow.com/questions/388657/receiving-a-sms-message-in-a-net-application
+http://snapvoip.blogspot.com/2007/10/configuring-using-and-debugging.html
+http://www.ibm.com/developerworks/library/mo-sms-web/
+https://www.twilio.com/docs/quickstart
+https://www.twilio.com/sms/pricing
+
+
+https://developers.google.com/gmail/api/guides/push
