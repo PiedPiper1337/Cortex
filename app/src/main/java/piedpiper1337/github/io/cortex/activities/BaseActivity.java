@@ -1,74 +1,108 @@
 package piedpiper1337.github.io.cortex.activities;
 
-import android.content.Intent;
-import android.net.Uri;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.telephony.SmsManager;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
+import android.text.Html;
+import android.util.Log;
 
-import piedpiper1337.github.io.cortex.R;
-import piedpiper1337.github.io.cortex.adapters.SampleFragmentPagerAdapter;
+/**
+ * Base Activity class that all Activities should inherit from
+ * <p/>
+ * Created by cary on 1/2/16.
+ */
+public abstract class BaseActivity extends AppCompatActivity {
 
-public class BaseActivity extends AppCompatActivity {
+    public abstract String getTag();
+
+    protected ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_base);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        logMethodName("OnCreate()");
+    }
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(new SampleFragmentPagerAdapter(getSupportFragmentManager(), BaseActivity.this));
+    @Override
+    protected void onStart() {
+        super.onStart();
+        logMethodName("onStart()");
+    }
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
-        tabLayout.setupWithViewPager(viewPager);
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        logMethodName("OnRestart()");
+    }
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        logMethodName("OnResume()");
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        logMethodName("OnPostResume()");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        logMethodName("OnPause()");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        logMethodName("OnStop()");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        logMethodName("OnDestroy()");
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        logMethodName("onLowMemory()");
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        logMethodName("OnBackPressed()");
+    }
+
+    /**
+     * Log which lifecycle event is being called and by whom
+     *
+     * @param methodName The name of the callback
+     */
+    private void logMethodName(String methodName) {
+        Log.d(getTag(), ">>>>>>>> " + methodName + " in activity: " + getTag() + " <<<<<<<<<<");
+    }
+
+    /**
+     * Show an error to the user
+     *
+     * @param message The message to show
+     */
+    public void showErrorDialog(String message) {
+        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog.setTitle("Error");
+        alertDialog.setMessage(Html.fromHtml(message));
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-                String phoneNumber = "9096324510";
-                String smsBody = "Testing";
-                Uri uri = Uri.parse("smsto:" + phoneNumber);
-                Intent it = new Intent(Intent.ACTION_SENDTO, uri);
-                it.putExtra("sms_body", smsBody);
-                startActivity(it);
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
             }
         });
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_base, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        alertDialog.show();
     }
 }
