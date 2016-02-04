@@ -15,8 +15,8 @@ public class InitialActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
 
-//        initUI();
-        getActionBar().show();
+        initUI();
+//        getActionBar().show();
 
     }
 
