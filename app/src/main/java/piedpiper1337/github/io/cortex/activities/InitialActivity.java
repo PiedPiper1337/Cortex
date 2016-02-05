@@ -1,6 +1,7 @@
 package piedpiper1337.github.io.cortex.activities;
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -9,6 +10,8 @@ import piedpiper1337.github.io.cortex.fragments.HomeFragment;
 
 public class InitialActivity extends BaseActivity {
     private static final String TAG = InitialActivity.class.getCanonicalName();
+
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +24,7 @@ public class InitialActivity extends BaseActivity {
     }
 
     public void initUI() {
+
         HomeFragment homeFragment = new HomeFragment();
         getSupportFragmentManager()
                 .beginTransaction()

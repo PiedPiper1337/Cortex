@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import piedpiper1337.github.io.cortex.Constants;
 import piedpiper1337.github.io.cortex.R;
+import piedpiper1337.github.io.cortex.activities.InitialActivity;
 import piedpiper1337.github.io.cortex.adapters.TabAdapter;
 
 /**
@@ -49,6 +50,7 @@ public class HomeFragment extends BaseFragment {
         mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
+        ((InitialActivity) mContext).setSupportActionBar(mToolbar);
 
         mViewPager.setAdapter(new TabAdapter(getFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
