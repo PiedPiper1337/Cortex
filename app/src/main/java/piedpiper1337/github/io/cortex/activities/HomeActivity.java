@@ -1,5 +1,6 @@
 package piedpiper1337.github.io.cortex.activities;
 
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -7,28 +8,35 @@ import android.view.MenuItem;
 
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.fragments.HomeFragment;
+import piedpiper1337.github.io.cortex.fragments.QuestionFragment;
 
-public class InitialActivity extends BaseActivity {
-    private static final String TAG = InitialActivity.class.getCanonicalName();
-
-    private Toolbar mToolbar;
+public class HomeActivity extends BaseActivity implements NavigationCallback{
+    private static final String TAG = HomeActivity.class.getCanonicalName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-
         initUI();
-//        getActionBar().show();
-
     }
 
     public void initUI() {
-
         HomeFragment homeFragment = new HomeFragment();
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.fragment_container, homeFragment, "homefragment")
+                .add(R.id.fragment_container, homeFragment, "homeFragment")
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void askQuestion() {
+        QuestionFragment questionFragment = QuestionFragment.newInstance();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                .replace(R.id.fragment_container, questionFragment, "questionFragment")
+                .addToBackStack(null)
                 .commit();
     }
 
@@ -55,7 +63,19 @@ public class InitialActivity extends BaseActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            fm.popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public String getTag() {
         return TAG;
     }
+
+
 }

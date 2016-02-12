@@ -2,8 +2,6 @@ package piedpiper1337.github.io.cortex.fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -14,9 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import piedpiper1337.github.io.cortex.Constants;
 import piedpiper1337.github.io.cortex.R;
-import piedpiper1337.github.io.cortex.activities.InitialActivity;
+import piedpiper1337.github.io.cortex.activities.HomeActivity;
+import piedpiper1337.github.io.cortex.activities.NavigationCallback;
 import piedpiper1337.github.io.cortex.adapters.TabAdapter;
 
 /**
@@ -30,6 +28,7 @@ public class HomeFragment extends BaseFragment {
     private FloatingActionButton mNewQuestionButton;
     private Context mContext;
     private Toolbar mToolbar;
+    private NavigationCallback mNavigationCallback;
 
     @Override
     public String getTagName() {
@@ -40,17 +39,23 @@ public class HomeFragment extends BaseFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mContext = activity;
+        if (activity instanceof NavigationCallback) {
+            mNavigationCallback = (NavigationCallback) activity;
+        } else {
+            throw new RuntimeException("activity doesn't implement navigation callback");
+        }
+
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.home_fragment, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         mTabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
         mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
 
-        ((InitialActivity) mContext).setSupportActionBar(mToolbar);
+        ((HomeActivity) mContext).setSupportActionBar(mToolbar);
 
         mViewPager.setAdapter(new TabAdapter(getFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
@@ -60,12 +65,15 @@ public class HomeFragment extends BaseFragment {
             public void onClick(View view) {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
-                String phoneNumber = Constants.CORTEX_NUMBER;
-                String smsBody = "Testing";
-                Uri uri = Uri.parse("smsto:" + phoneNumber);
-                Intent it = new Intent(Intent.ACTION_SENDTO, uri);
-                it.putExtra("sms_body", smsBody);
-                startActivity(it);
+
+
+//                String phoneNumber = Constants.CORTEX_NUMBER;
+//                String smsBody = "Testing";
+//                Uri uri = Uri.parse("smsto:" + phoneNumber);
+//                Intent it = new Intent(Intent.ACTION_SENDTO, uri);
+//                it.putExtra("sms_body", smsBody);
+//                startActivity(it);
+                mNavigationCallback.askQuestion();
             }
         });
         return view;
