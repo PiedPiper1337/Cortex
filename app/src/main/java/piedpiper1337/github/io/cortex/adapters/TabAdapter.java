@@ -8,7 +8,7 @@ import piedpiper1337.github.io.cortex.fragments.PageFragment;
  * Created by brianzhao on 1/19/16.
  */
 public class TabAdapter extends android.support.v4.app.FragmentPagerAdapter {
-    private String tabTitles[] = {"Questions", "WikiLite", "RedditLite"};
+    private String tabTitles[] = {"Questions", "WikiLite"};
 
     public TabAdapter(FragmentManager fm) {
         super(fm);
