@@ -1,9 +1,9 @@
 package piedpiper1337.github.io.cortex.fragments;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 

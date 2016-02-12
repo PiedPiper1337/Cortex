@@ -1,21 +1,26 @@
 package piedpiper1337.github.io.cortex.adapters;
 
-import android.support.v4.app.FragmentManager;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.support.v13.app.FragmentPagerAdapter;
 
 import piedpiper1337.github.io.cortex.fragments.PageFragment;
 
 /**
  * Created by brianzhao on 1/19/16.
  */
-public class TabAdapter extends android.support.v4.app.FragmentPagerAdapter {
+
+//TODO Replace this entire class so that it works
+public class TabAdapter extends FragmentPagerAdapter {
     private String tabTitles[] = {"Questions", "WikiLite"};
 
     public TabAdapter(FragmentManager fm) {
         super(fm);
     }
 
+
     @Override
-    public android.support.v4.app.Fragment getItem(int position) {
+    public Fragment getItem(int position) {
         return PageFragment.newInstance(position + 1);
     }
 

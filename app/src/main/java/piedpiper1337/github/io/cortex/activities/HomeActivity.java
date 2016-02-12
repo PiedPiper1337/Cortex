@@ -19,7 +19,7 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
 
     public void initUI() {
         HomeFragment homeFragment = new HomeFragment();
-        getSupportFragmentManager()
+        getFragmentManager()
                 .beginTransaction()
                 .add(R.id.fragment_container, homeFragment, "homeFragment")
                 .commit();
@@ -28,9 +28,10 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
     @Override
     public void askQuestion() {
         QuestionFragment questionFragment = QuestionFragment.newInstance();
-        getSupportFragmentManager()
+        getFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left,
+                        R.animator.slide_in_left, R.animator.slide_out_right)
                 .replace(R.id.fragment_container, questionFragment, "questionFragment")
                 .addToBackStack(null)
                 .commit();

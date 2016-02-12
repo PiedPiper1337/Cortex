@@ -43,6 +43,8 @@ public class QuestionFragment extends BaseFragment {
     private EditText mEditText;
     private FloatingActionButton mSendButton;
     private Toolbar mToolbar;
+    private static final int REQUEST_SMS_PERMISSION= 1;
+    private static final String FRAGMENT_DIALOG = "dialog";
 
     public static QuestionFragment newInstance() {
         return new QuestionFragment();
@@ -64,29 +66,31 @@ public class QuestionFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        mEditText.requestFocus();
+        InputMethodManager imm = (InputMethodManager) ((HomeActivity) mContext).getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(mEditText, InputMethodManager.SHOW_FORCED);
+
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
             requestSMSPermission();
             return;
         }
-        mEditText.requestFocus();
-        InputMethodManager imm = (InputMethodManager) ((HomeActivity) mContext).getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(mEditText, InputMethodManager.SHOW_IMPLICIT);
+
     }
 
     private void requestSMSPermission() {
-        if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+        if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
             new ConfirmationDialog().show(getChildFragmentManager(), FRAGMENT_DIALOG);
         } else {
-            FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
-                    REQUEST_CAMERA_PERMISSION);
+            FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS},
+                    REQUEST_SMS_PERMISSION);
         }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+        if (requestCode == REQUEST_SMS_PERMISSION) {
             if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 ((HomeActivity) mContext).showErrorDialog(getString(R.string.request_permission));
             }
@@ -180,7 +184,7 @@ public class QuestionFragment extends BaseFragment {
                         public void onClick(DialogInterface dialog, int which) {
                             FragmentCompat.requestPermissions(parent,
                                     new String[]{Manifest.permission.SEND_SMS},
-                                    REQUEST_CAMERA_PERMISSION);
+                                    REQUEST_SMS_PERMISSION);
                         }
                     })
                     .setNegativeButton(android.R.string.cancel,

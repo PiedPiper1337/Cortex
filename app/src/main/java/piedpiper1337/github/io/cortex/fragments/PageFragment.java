@@ -1,6 +1,5 @@
 package piedpiper1337.github.io.cortex.fragments;
 
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,8 @@ import piedpiper1337.github.io.cortex.R;
 /**
  * Created by brianzhao on 1/19/16.
  */
-public class PageFragment extends Fragment {
+public class PageFragment extends BaseFragment{
+    public static final String TAG = "tag TODO";
     public static final String ARG_PAGE = "ARG_PAGE";
 
     private int mPage;
@@ -36,5 +36,10 @@ public class PageFragment extends Fragment {
         TextView textView = (TextView) view;
         textView.setText("Fragment #" + mPage + "\nStill learning how to use fragments!!");
         return view;
+    }
+
+    @Override
+    public String getTagName() {
+        return TAG;
     }
 }

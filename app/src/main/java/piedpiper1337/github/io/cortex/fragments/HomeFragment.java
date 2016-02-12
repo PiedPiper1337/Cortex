@@ -66,13 +66,6 @@ public class HomeFragment extends BaseFragment {
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
 
-
-//                String phoneNumber = Constants.CORTEX_NUMBER;
-//                String smsBody = "Testing";
-//                Uri uri = Uri.parse("smsto:" + phoneNumber);
-//                Intent it = new Intent(Intent.ACTION_SENDTO, uri);
-//                it.putExtra("sms_body", smsBody);
-//                startActivity(it);
                 mNavigationCallback.askQuestion();
             }
         });
