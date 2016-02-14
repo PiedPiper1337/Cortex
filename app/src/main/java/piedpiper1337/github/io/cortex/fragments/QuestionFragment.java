@@ -28,6 +28,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.R;
@@ -198,6 +199,7 @@ public class QuestionFragment extends BaseFragment {
         }
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(Constants.CORTEX_NUMBER, null, toSend, null, null);
+        Toast.makeText(mContext, "Question sent!", Toast.LENGTH_SHORT).show();
         ((HomeActivity)mContext).onBackPressed();
     }
 
