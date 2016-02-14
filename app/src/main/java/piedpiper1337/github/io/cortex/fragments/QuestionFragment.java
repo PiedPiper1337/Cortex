@@ -8,9 +8,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +17,8 @@ import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,12 +26,14 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import piedpiper1337.github.io.cortex.Constants;
+import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.HomeActivity;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
+import piedpiper1337.github.io.cortex.utils.CustomEditText;
 
 /**
  * Created by brianzhao on 2/11/16.
@@ -40,8 +42,10 @@ public class QuestionFragment extends BaseFragment {
     private static final String TAG = BaseFragment.class.getSimpleName();
     private Context mContext;
     private NavigationCallback mNavigationCallback;
-    private EditText mEditText;
+    private CustomEditText mEditText;
     private FloatingActionButton mSendButton;
+    private LinearLayout mTopLinearLayout;
+    private LinearLayout mBottomLinearLayout;
     private Toolbar mToolbar;
     private static final int REQUEST_SMS_PERMISSION= 1;
     private static final String FRAGMENT_DIALOG = "dialog";
@@ -78,6 +82,14 @@ public class QuestionFragment extends BaseFragment {
 
     }
 
+    @Override
+    public boolean onBackPressed() {
+        mEditText.clearFocus();
+//        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+        return false;
+    }
+
     private void requestSMSPermission() {
         if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
             new ConfirmationDialog().show(getChildFragmentManager(), FRAGMENT_DIALOG);
@@ -103,7 +115,10 @@ public class QuestionFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_question, container, false);
-        mEditText = (EditText) view.findViewById(R.id.question_edit_text);
+//        mTopLinearLayout = (LinearLayout) view.findViewById(R.id.top_linear_layout_questions);
+//        mBottomLinearLayout = (LinearLayout) view.findViewById(R.id.bottom_linear_layout_questions);
+
+        mEditText = (CustomEditText) view.findViewById(R.id.question_edit_text);
         mEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -133,6 +148,20 @@ public class QuestionFragment extends BaseFragment {
                 return false;
             }
         });
+        mEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    Log.d(getTagName(), "has focus!!!!!");
+//                    mTopLinearLayout.setVisibility(View.VISIBLE);
+//                    mBottomLinearLayout.setVisibility(View.VISIBLE);
+                } else {
+//                    mTopLinearLayout.setVisibility(View.GONE);
+//                    mBottomLinearLayout.setVisibility(View.GONE);
+                }
+            }
+        });
+
 
         mSendButton = (FloatingActionButton) view.findViewById(R.id.send_button);
         mSendButton.setOnClickListener(new View.OnClickListener() {
@@ -164,6 +193,9 @@ public class QuestionFragment extends BaseFragment {
 //    }
 
     public void sendSmsIntent(String toSend){
+        if (toSend.isEmpty()) {
+            return;
+        }
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(Constants.CORTEX_NUMBER, null, toSend, null, null);
         ((HomeActivity)mContext).onBackPressed();
@@ -200,4 +232,5 @@ public class QuestionFragment extends BaseFragment {
                     .create();
         }
     }
+
 }

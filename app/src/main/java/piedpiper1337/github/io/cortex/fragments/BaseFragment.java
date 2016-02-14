@@ -11,6 +11,9 @@ import android.view.View;
  * Created by cary on 1/2/16.
  */
 public abstract class BaseFragment extends Fragment {
+    protected BackHandlerInterface mBackHandlerInterface;
+
+    public abstract boolean onBackPressed();
 
     /**
      * @return class name
@@ -26,6 +29,11 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        if (!(activity instanceof BackHandlerInterface)) {
+            throw new ClassCastException("Hosting activity must implement BackHandlerInterface");
+        } else {
+            mBackHandlerInterface = (BackHandlerInterface) getActivity();
+        }
         logMethodName("onAttach()");
     }
 
@@ -38,7 +46,9 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mBackHandlerInterface.setSelectedFragment(this);
         logMethodName("onViewCreated()");
+
     }
 
     @Override
@@ -114,6 +124,14 @@ public abstract class BaseFragment extends Fragment {
      */
     private void logMethodName(String methodName) {
         Log.d(getTagName(), ">>>>>>>> " + methodName + " in fragment: " + getTagName() + " <<<<<<<<<<");
+    }
+
+    public interface BackHandlerInterface {
+        public void setSelectedFragment(BaseFragment backHandledFragment);
+    }
+
+    public BackHandlerInterface getBackHandlerInterface() {
+        return mBackHandlerInterface;
     }
 }
 

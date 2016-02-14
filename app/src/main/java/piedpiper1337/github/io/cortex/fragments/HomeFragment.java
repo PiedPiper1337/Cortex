@@ -71,4 +71,9 @@ public class HomeFragment extends BaseFragment {
         });
         return view;
     }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
 }

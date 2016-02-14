@@ -8,16 +8,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 
+import piedpiper1337.github.io.cortex.fragments.BaseFragment;
+
 /**
  * Base Activity class that all Activities should inherit from
  * <p/>
  * Created by cary on 1/2/16.
  */
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements BaseFragment.BackHandlerInterface{
 
     public abstract String getTag();
 
     protected ProgressDialog mProgressDialog;
+
+    private BaseFragment mSelectedFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,5 +108,14 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         });
         alertDialog.show();
+    }
+
+
+    public void setSelectedFragment(BaseFragment baseFragment) {
+        mSelectedFragment = baseFragment;
+    }
+
+    public BaseFragment getSelectedFragment() {
+        return mSelectedFragment;
     }
 }

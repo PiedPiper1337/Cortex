@@ -29,10 +29,11 @@
         </android.support.design.widget.AppBarLayout>
 
 
-        <EditText
+        <piedpiper1337.github.io.cortex.utils.CustomEditText
             android:id="@+id/question_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
             android:layout_gravity="top"
             android:layout_marginTop="7dp"
             android:layout_marginLeft="7dp"
@@ -46,8 +47,75 @@
             android:inputType="textCapSentences"
             android:singleLine="true"
             android:padding="10dp">
-        </EditText>
+        </piedpiper1337.github.io.cortex.utils.CustomEditText>
 
+
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_weight="1"-->
+            <!--android:layout_margin="7dp"-->
+            <!--android:orientation="vertical">-->
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/top_linear_layout_questions">-->
+                <!--&lt;!&ndash;who what where why&ndash;&gt;-->
+                <!--<Button-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/who_question"-->
+                    <!--android:id="@+id/who_button"/>-->
+                <!--<Button-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/what_question"-->
+                    <!--android:id="@+id/what_button"/>-->
+                <!--<Button-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/where_question"-->
+                    <!--android:id="@+id/where_button"/>-->
+
+                <!--<Button-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/why_question"-->
+                    <!--android:id="@+id/why_button"/>-->
+
+            <!--</LinearLayout>-->
+
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:id="@+id/bottom_linear_layout_questions">-->
+                <!--&lt;!&ndash;when which how is &ndash;&gt;-->
+                <!--<Button-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/when_question"-->
+                    <!--android:id="@+id/when_button"/>-->
+                <!--<Button-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/which_question"-->
+                    <!--android:id="@+id/which_button"/>-->
+
+                <!--<Button-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/how_question"-->
+                    <!--android:id="@+id/how_button"/>-->
+                <!--<Button-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/is_question"-->
+                    <!--android:id="@+id/is_button"/>-->
+
+            <!--</LinearLayout>-->
+        <!--</LinearLayout>-->
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton

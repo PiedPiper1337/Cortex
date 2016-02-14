@@ -4,4 +4,12 @@
     <string name="question_hint">Please enter your question here.\n\nPlease do not exceed 120 characters.</string>
     <string name="question_fragment_title">Ask Your Question!</string>
     <string name="request_permission">Cortex needs SMS permssion</string>
+    <string name="who_question">Who...?</string>
+    <string name="what_question">What...?</string>
+    <string name="where_question">Where...?</string>
+    <string name="why_question">Why...?</string>
+    <string name="when_question">When...?</string>
+    <string name="which_question">Which...?</string>
+    <string name="how_question">How...?</string>
+    <string name="is_question">Is...?</string>
 </resources>

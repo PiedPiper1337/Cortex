@@ -42,4 +42,9 @@ public class PageFragment extends BaseFragment{
     public String getTagName() {
         return TAG;
     }
+
+    @Override
+    public boolean onBackPressed() {
+        return false;
+    }
 }

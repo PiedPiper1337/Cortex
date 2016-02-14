@@ -63,7 +63,12 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
     public void onBackPressed() {
         FragmentManager fm = getFragmentManager();
         if (fm.getBackStackEntryCount() > 0) {
-            fm.popBackStack();
+            if (getSelectedFragment() != null && !getSelectedFragment().onBackPressed()) {
+                // Selected fragment did not consume the back press event.
+                fm.popBackStack();
+            } else {
+                super.onBackPressed();
+            }
         } else {
             super.onBackPressed();
         }

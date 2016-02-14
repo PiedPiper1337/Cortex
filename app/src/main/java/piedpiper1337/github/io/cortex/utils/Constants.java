@@ -1,4 +1,4 @@
-package piedpiper1337.github.io.cortex;
+package piedpiper1337.github.io.cortex.utils;
 
 /**
  * Created by brianzhao on 2/3/16.
