@@ -18,11 +18,14 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
     }
 
     public void initUI() {
-        HomeFragment homeFragment = new HomeFragment();
-        getFragmentManager()
-                .beginTransaction()
-                .add(R.id.fragment_container, homeFragment, "homeFragment")
-                .commit();
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager.findFragmentById(R.id.fragment_container) == null) {
+            HomeFragment homeFragment = new HomeFragment();
+            fragmentManager
+                    .beginTransaction()
+                    .add(R.id.fragment_container, homeFragment, "homeFragment")
+                    .commit();
+        }
     }
 
     @Override
