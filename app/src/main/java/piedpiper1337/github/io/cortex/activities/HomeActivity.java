@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.fragments.HomeFragment;
-import piedpiper1337.github.io.cortex.fragments.QuestionFragment;
+import piedpiper1337.github.io.cortex.fragments.SmsQuestionFragment;
 
 public class HomeActivity extends BaseActivity implements NavigationCallback {
     private static final String TAG = HomeActivity.class.getCanonicalName();
@@ -30,12 +30,12 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
 
     @Override
     public void askQuestion() {
-        QuestionFragment questionFragment = QuestionFragment.newInstance();
+        SmsQuestionFragment smsQuestionFragment = SmsQuestionFragment.newInstance();
         getFragmentManager()
                 .beginTransaction()
                 .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left,
                         R.animator.slide_in_left, R.animator.slide_out_right)
-                .replace(R.id.fragment_container, questionFragment, "questionFragment")
+                .replace(R.id.fragment_container, smsQuestionFragment, "smsQuestionFragment")
                 .addToBackStack(null)
                 .commit();
     }
@@ -81,6 +81,5 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
     public String getTag() {
         return TAG;
     }
-
 
 }

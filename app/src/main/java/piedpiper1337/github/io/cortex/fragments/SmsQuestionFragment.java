@@ -8,7 +8,9 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,7 +19,6 @@ import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.telephony.SmsManager;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -25,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +39,7 @@ import piedpiper1337.github.io.cortex.utils.CustomEditText;
 /**
  * Created by brianzhao on 2/11/16.
  */
-public class QuestionFragment extends BaseFragment {
+public class SmsQuestionFragment extends BaseFragment {
     private static final String TAG = BaseFragment.class.getSimpleName();
     private Context mContext;
     private NavigationCallback mNavigationCallback;
@@ -51,8 +51,8 @@ public class QuestionFragment extends BaseFragment {
     private static final int REQUEST_SMS_PERMISSION= 1;
     private static final String FRAGMENT_DIALOG = "dialog";
 
-    public static QuestionFragment newInstance() {
-        return new QuestionFragment();
+    public static SmsQuestionFragment newInstance() {
+        return new SmsQuestionFragment();
     }
 
 
@@ -125,7 +125,7 @@ public class QuestionFragment extends BaseFragment {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 boolean handled = false;
                 if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    sendSmsIntent(mEditText.getText().toString());
+                    sendSms(mEditText.getText().toString());
                     handled = true;
                 }
                 return handled;
@@ -140,7 +140,7 @@ public class QuestionFragment extends BaseFragment {
                     {
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
-                            sendSmsIntent(mEditText.getText().toString());
+                            sendSms(mEditText.getText().toString());
                             return true;
                         default:
                             break;
@@ -168,7 +168,7 @@ public class QuestionFragment extends BaseFragment {
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sendSmsIntent(mEditText.getText().toString());
+                sendSms(mEditText.getText().toString());
             }
         });
 
@@ -178,25 +178,53 @@ public class QuestionFragment extends BaseFragment {
         return view;
     }
 
+    /**
+     * removes all special characters
+     * @return
+     */
+    public String cleanMessage(String message){
+        return message.replaceAll("\\W", "").toLowerCase();
+    }
+
+    /**
+     * makes sure input is less than 100 characters
+     * @return
+     */
+    public boolean messageIsProperLength(String message){
+        if (message.length() > 100) {
+            Toast.makeText(getActivity(), "Sorry! Message is too long to send.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
 
     @Override
     public String getTagName() {
         return TAG;
     }
 
-//    public void sendSmsIntent(String toSend) {
-//        String phoneNumber = Constants.CORTEX_NUMBER;
-//        String smsBody = toSend;
-//        Uri uri = Uri.parse("smsto:" + phoneNumber);
-//        Intent it = new Intent(Intent.ACTION_SENDTO, uri);
-//        it.putExtra("sms_body", smsBody);
-//        startActivity(it);
-//    }
+    /**
+     * old way of sending message by using hangouts
+     * not used
+     * @param toSend
+     */
+    public void sendSmsIntent(String toSend) {
+        String phoneNumber = Constants.CORTEX_NUMBER;
+        String smsBody = toSend;
+        Uri uri = Uri.parse("smsto:" + phoneNumber);
+        Intent it = new Intent(Intent.ACTION_SENDTO, uri);
+        it.putExtra("sms_body", smsBody);
+        startActivity(it);
+    }
 
-    public void sendSmsIntent(String toSend){
-        if (toSend.isEmpty()) {
+    public void sendSms(String toSend){
+        toSend = cleanMessage(toSend);
+        if (!messageIsProperLength(toSend)) {
             return;
         }
+        //append header information here
+
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(Constants.CORTEX_NUMBER, null, toSend, null, null);
         Toast.makeText(mContext, "Question sent!", Toast.LENGTH_SHORT).show();
@@ -234,5 +262,7 @@ public class QuestionFragment extends BaseFragment {
                     .create();
         }
     }
+
+
 
 }
