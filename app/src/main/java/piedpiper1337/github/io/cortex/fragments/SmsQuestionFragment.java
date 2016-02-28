@@ -18,25 +18,22 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import piedpiper1337.github.io.cortex.models.Question;
+import piedpiper1337.github.io.cortex.models.Wiki;
 import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.HomeActivity;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
 import piedpiper1337.github.io.cortex.utils.CustomEditText;
-import piedpiper1337.github.io.cortex.utils.EnterPressedCallback;
+import piedpiper1337.github.io.cortex.utils.SmsHandler;
 
 /**
  * Created by brianzhao on 2/11/16.
@@ -45,6 +42,7 @@ public class SmsQuestionFragment extends BaseFragment {
     private static final String TAG = SmsQuestionFragment.class.getSimpleName();
     private Context mContext;
     private NavigationCallback mNavigationCallback;
+    private SmsHandler mSmsHandler;
     private CustomEditText mEditText;
     private FloatingActionButton mSendButton;
     private LinearLayout mTopLinearLayout;
@@ -53,8 +51,16 @@ public class SmsQuestionFragment extends BaseFragment {
     private static final int REQUEST_SMS_PERMISSION= 1;
     private static final String FRAGMENT_DIALOG = "dialog";
 
-    public static SmsQuestionFragment newInstance() {
-        return new SmsQuestionFragment();
+    private static final String QUESTION_TYPE = "io.github.piedpiper1337.cortex.QUESTION_TYPE";
+    private String mQuestionType;
+
+
+    public static SmsQuestionFragment newInstance(String questionType) {
+        Bundle args = new Bundle();
+        args.putString(QUESTION_TYPE, questionType);
+        SmsQuestionFragment smsQuestionFragment = new SmsQuestionFragment();
+        smsQuestionFragment.setArguments(args);
+        return smsQuestionFragment;
     }
 
 
@@ -67,6 +73,8 @@ public class SmsQuestionFragment extends BaseFragment {
         } else {
             throw new RuntimeException("activity doesn't implement navigation callback");
         }
+        mSmsHandler = new SmsHandler(mContext);
+        mQuestionType = getArguments().getString(QUESTION_TYPE);
 
     }
 
@@ -122,9 +130,6 @@ public class SmsQuestionFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        //        mTopLinearLayout = (LinearLayout) view.findViewById(R.id.top_linear_layout_questions);
-//        mBottomLinearLayout = (LinearLayout) view.findViewById(R.id.bottom_linear_layout_questions);
-
         mEditText = (CustomEditText) view.findViewById(R.id.question_edit_text);
         mEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -144,22 +149,6 @@ public class SmsQuestionFragment extends BaseFragment {
                 return false;
             }
         });
-        mEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    Log.d(getTagName(), "has focus!!!!!");
-//                    mTopLinearLayout.setVisibility(View.VISIBLE);
-//                    mBottomLinearLayout.setVisibility(View.VISIBLE);
-
-
-                } else {
-//                    mTopLinearLayout.setVisibility(View.GONE);
-//                    mBottomLinearLayout.setVisibility(View.GONE);
-                }
-            }
-        });
-
 
         mSendButton = (FloatingActionButton) view.findViewById(R.id.send_button);
         mSendButton.setOnClickListener(new View.OnClickListener() {
@@ -171,30 +160,15 @@ public class SmsQuestionFragment extends BaseFragment {
 
         mToolbar = (Toolbar) view.findViewById(R.id.question_toolbar);
         ((HomeActivity) mContext).setSupportActionBar(mToolbar);
-        ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.question_fragment_title);
-    }
 
-    /**
-     * removes all special characters
-     * @return
-     */
-    public String cleanMessage(String message){
-        return message.replaceAll("\\W", "").toLowerCase();
-    }
 
-    /**
-     * makes sure input is less than 100 characters
-     * @return
-     */
-    public boolean messageIsProperLength(String message){
-        if (message.length() > 100) {
-            Toast.makeText(getActivity(), "Sorry! Message is too long to send.", Toast.LENGTH_SHORT).show();
-            return false;
-        } else if (message.length() == 0) {
-            Toast.makeText(getActivity(), "Sorry! Can't send an empty message.", Toast.LENGTH_SHORT).show();
-            return false;
+        if (mQuestionType.equals(Constants.SMS_TYPE.QUESTION_TYPE)) {
+            mEditText.setHint(R.string.question_hint);
+            ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.question_fragment_title);
+        } else if (mQuestionType.equals(Constants.SMS_TYPE.WIKI_TYPE)) {
+            mEditText.setHint(R.string.wiki_hint);
+            ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.wiki_lookup_fragment_title);
         }
-        return true;
     }
 
 
@@ -218,28 +192,18 @@ public class SmsQuestionFragment extends BaseFragment {
     }
 
     public void sendSms(String toSend){
-        String originalQuestion = toSend;
-        toSend = cleanMessage(toSend);
-
-        Log.d(getTagName(), toSend);
-
-
-        if (!messageIsProperLength(toSend)) {
-            return;
+        if (mSmsHandler.canBeSent(toSend)) {
+            if (mQuestionType.equals(Constants.SMS_TYPE.QUESTION_TYPE)) {
+                Question question = new Question(toSend, Constants.SMS_TYPE.QUESTION_TYPE);
+                long id = question.save();
+                mSmsHandler.sendSmsQuestion(toSend,id);
+            } else if (mQuestionType.equals(Constants.SMS_TYPE.WIKI_TYPE)) {
+                Wiki wiki = new Wiki(toSend, Constants.SMS_TYPE.WIKI_TYPE);
+                long id = wiki.save();
+                mSmsHandler.sendSmsQuestion(toSend,id);
+            }
+            ((HomeActivity)mContext).onBackPressed();
         }
-
-        //append header information here
-        Question question = new Question(originalQuestion, "QUES");
-        question.save();
-
-
-
-        SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage(Constants.CORTEX_NUMBER, null, toSend, null, null);
-        Toast.makeText(mContext, "Question sent!", Toast.LENGTH_SHORT).show();
-
-        ((HomeActivity)mContext).onBackPressed();
-
     }
 
     /**
@@ -273,7 +237,5 @@ public class SmsQuestionFragment extends BaseFragment {
                     .create();
         }
     }
-
-
 
 }

@@ -25,7 +25,6 @@ public class HomeFragment extends BaseFragment {
 
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
-    private FloatingActionButton mNewQuestionButton;
     private Context mContext;
     private Toolbar mToolbar;
     private NavigationCallback mNavigationCallback;
@@ -59,16 +58,6 @@ public class HomeFragment extends BaseFragment {
 
         mViewPager.setAdapter(new TabAdapter(getChildFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
-        mNewQuestionButton = (FloatingActionButton) view.findViewById(R.id.fab);
-        mNewQuestionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-
-                mNavigationCallback.askQuestion();
-            }
-        });
         return view;
     }
 
