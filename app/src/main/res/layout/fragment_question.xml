@@ -1,135 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:background="@color/transparentGray"
-             android:orientation="vertical">
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/border_color"
+    android:padding="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-
-        <android.support.design.widget.AppBarLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/AppTheme.AppBarOverlay"
-            >
+            android:background="@color/windowBackground"
+            android:orientation="vertical"
+            android:paddingBottom="40dp"
+            android:paddingTop="40dp">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/question_toolbar"
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="#2b82c4"
-                android:title="@string/question_fragment_title"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="@string/question"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+
                 />
 
-        </android.support.design.widget.AppBarLayout>
+            <TextView
+                android:id="@+id/question_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="4dp"
+                android:textSize="16sp"
+                tools:text="When is George Washington's birthday?"
+                />
+
+        </LinearLayout>
 
 
-        <piedpiper1337.github.io.cortex.utils.CustomEditText
-            android:id="@+id/question_edit_text"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:layout_gravity="top"
-            android:layout_marginTop="7dp"
-            android:layout_marginLeft="7dp"
-            android:layout_marginRight="7dp"
-            android:layout_marginBottom="7dp"
-            android:background="@color/windowBackground"
-            android:gravity="top"
-            android:hint="@string/question_hint"
-            android:textColorHint="@color/lightGray"
-            android:imeOptions="actionSend"
-            android:imeActionLabel="Send!"
-            android:inputType="textCapSentences"
-            android:singleLine="true"
-            android:padding="10dp"
-            >
-        </piedpiper1337.github.io.cortex.utils.CustomEditText>
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:orientation="vertical"
+            android:paddingBottom="40dp"
+            android:paddingTop="40dp">
 
 
-        <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_weight="1"-->
-            <!--android:layout_margin="7dp"-->
-            <!--android:orientation="vertical">-->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:text="@string/answer"
+                android:textColor="@color/black"
+                android:textSize="20sp"
 
-            <!--<LinearLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/top_linear_layout_questions">-->
-                <!--&lt;!&ndash;who what where why&ndash;&gt;-->
-                <!--<Button-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/who_question"-->
-                    <!--android:id="@+id/who_button"/>-->
-                <!--<Button-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/what_question"-->
-                    <!--android:id="@+id/what_button"/>-->
-                <!--<Button-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/where_question"-->
-                    <!--android:id="@+id/where_button"/>-->
+                />
 
-                <!--<Button-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/why_question"-->
-                    <!--android:id="@+id/why_button"/>-->
-
-            <!--</LinearLayout>-->
-
-
-            <!--<LinearLayout-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:id="@+id/bottom_linear_layout_questions">-->
-                <!--&lt;!&ndash;when which how is &ndash;&gt;-->
-                <!--<Button-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/when_question"-->
-                    <!--android:id="@+id/when_button"/>-->
-                <!--<Button-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/which_question"-->
-                    <!--android:id="@+id/which_button"/>-->
-
-                <!--<Button-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/how_question"-->
-                    <!--android:id="@+id/how_button"/>-->
-                <!--<Button-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text="@string/is_question"-->
-                    <!--android:id="@+id/is_button"/>-->
-
-            <!--</LinearLayout>-->
-        <!--</LinearLayout>-->
+            <TextView
+                android:id="@+id/answer_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="4dp"
+                android:textSize="16sp"
+                tools:text="Some year."
+                />
+        </LinearLayout>
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/send_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:foregroundGravity="bottom|right"
-        android:src="@android:drawable/ic_menu_send"
-        android:tint="@color/windowBackground"
-        app:backgroundTint="#2b82c4"
-        />
-
-</FrameLayout>
+</ScrollView>

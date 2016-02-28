@@ -36,6 +36,7 @@ import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.HomeActivity;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
 import piedpiper1337.github.io.cortex.utils.CustomEditText;
+import piedpiper1337.github.io.cortex.utils.EnterPressedCallback;
 
 /**
  * Created by brianzhao on 2/11/16.
@@ -116,7 +117,7 @@ public class SmsQuestionFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_question, container, false);
+        return inflater.inflate(R.layout.fragment_sms_question, container, false);
     }
 
     @Override
@@ -125,17 +126,6 @@ public class SmsQuestionFragment extends BaseFragment {
 //        mBottomLinearLayout = (LinearLayout) view.findViewById(R.id.bottom_linear_layout_questions);
 
         mEditText = (CustomEditText) view.findViewById(R.id.question_edit_text);
-        mEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    sendSms(mEditText.getText().toString());
-                    handled = true;
-                }
-                return handled;
-            }
-        });
         mEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {

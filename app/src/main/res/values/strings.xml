@@ -16,5 +16,8 @@
     <string name="how_question">How...?</string>
     <string name="is_question">Is...?</string>
     <string name="zero_questions_background">You have no previous questions. Click the + button to start asking!</string>
-    <string name="answer_not_arrived_yet">Sorry, but the answer has not arrived yet. Please be patient.</string>
+    <string name="answer_not_arrived_yet">Waiting to receive answer... Please be patient.</string>
+    <string name="question">Question</string>
+    <string name="answer">Answer</string>
+    <string name="undo">UNDO</string>
 </resources>

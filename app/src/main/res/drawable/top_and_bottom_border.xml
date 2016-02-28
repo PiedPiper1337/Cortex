@@ -13,7 +13,7 @@
 
     <item
         android:bottom="1dp"
-        android:top="1dp">
+        >
         <shape
             android:shape="rectangle">
             <stroke

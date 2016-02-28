@@ -3,6 +3,8 @@ package piedpiper1337.github.io.cortex.utils;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -26,6 +28,21 @@ public class CustomEditText extends EditText{
     public CustomEditText(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.context = context;
+    }
+
+
+    /**
+     * this code is magic
+     * http://stackoverflow.com/a/33207455
+     * @param outAttrs
+     * @return
+     */
+    @Override
+    public InputConnection onCreateInputConnection(EditorInfo outAttrs)
+    {
+        InputConnection conn = super.onCreateInputConnection(outAttrs);
+        outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
+        return conn;
     }
 
     @Override

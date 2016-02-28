@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -13,11 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.activeandroid.query.Select;
 
@@ -59,9 +59,7 @@ public class QuestionListFragment extends BaseFragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.question_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-
         updateUI();
-
         return view;
     }
 
@@ -77,11 +75,7 @@ public class QuestionListFragment extends BaseFragment {
 
         if (mQuestionList != null) {
             if (mQuestionList.size() == 0) {
-                mRecyclerView.setVisibility(View.GONE);
-
-                Animation fadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.fade_in);
-                mBackgroundLayout.setVisibility(View.VISIBLE);
-                mBackgroundLayout.startAnimation(fadeInAnimation);
+                swapToBackgroundView();
 
             } else {
                 QuestionAdapter questionAdapter = new QuestionAdapter(mQuestionList, this);
@@ -89,12 +83,25 @@ public class QuestionListFragment extends BaseFragment {
                 ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
                 touchHelper.attachToRecyclerView(mRecyclerView);
                 mRecyclerView.setAdapter(questionAdapter);
+                swapToRecyclerView();
 
             }
         } else {
             Log.e(getTagName(), "Null question list from db call!!!");
             throw new RuntimeException();
         }
+    }
+
+    private void swapToBackgroundView() {
+        mRecyclerView.setVisibility(View.GONE);
+        Animation fadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.fade_in);
+        mBackgroundLayout.setVisibility(View.VISIBLE);
+        mBackgroundLayout.startAnimation(fadeInAnimation);
+    }
+
+    private void swapToRecyclerView() {
+        mBackgroundLayout.setVisibility(View.GONE);
+        mRecyclerView.setVisibility(View.VISIBLE);
     }
 
 
@@ -114,14 +121,15 @@ public class QuestionListFragment extends BaseFragment {
         private TextView mAnswerTextView;
         private Question mQuestion;
 
-        public QuestionHolder(View itemView) {
+        public QuestionHolder(final View itemView) {
             super(itemView);
             mQuestionTextView = (TextView) itemView.findViewById(R.id.list_item_question_text_view);
             mAnswerTextView = (TextView) itemView.findViewById(R.id.list_item_answer_text_view);
             itemView.setOnClickListener(this);
+
         }
 
-        public void bindQuestion(Question question){
+        public void bindQuestion(Question question) {
             mQuestion = question;
             mQuestionTextView.setText(question.getQuestion());
             String answer = question.getAnswer();
@@ -131,6 +139,7 @@ public class QuestionListFragment extends BaseFragment {
                 mAnswerTextView.setText(R.string.answer_not_arrived_yet);
             }
         }
+
 
         //TODO make new fragment
         @Override
@@ -170,14 +179,44 @@ public class QuestionListFragment extends BaseFragment {
         }
 
         @Override
-        public void onItemDismiss(int position) {
-            Question toBeDeleted = mQuestions.remove(position);
-            toBeDeleted.delete();
-            if (mQuestions.size() > 0) {
-                notifyItemRemoved(position);
-            } else {
-                mQuestionListFragment.updateUI();
-            }
+        public void onItemDismiss(final int position) {
+            final Question toBeDeleted = mQuestions.remove(position);
+            notifyItemRemoved(position);
+
+            final Snackbar snackbar = Snackbar
+                    .make(mRecyclerView, "Question Deleted", Snackbar.LENGTH_LONG);
+
+            snackbar.setAction(R.string.undo, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    snackbar.dismiss();
+                }
+            })
+                    .setActionTextColor(ContextCompat.getColor(mContext, R.color.lightOrange))
+                    .setCallback(new Snackbar.Callback() {
+
+                        @Override
+                        public void onDismissed(Snackbar snackbar, int event) {
+                            switch (event) {
+                                case DISMISS_EVENT_CONSECUTIVE:
+                                case DISMISS_EVENT_TIMEOUT:
+                                    //actually delete
+                                    toBeDeleted.delete();
+                                    break;
+                                case DISMISS_EVENT_MANUAL:
+                                    //restore
+                                    mQuestions.add(position, toBeDeleted);
+                                    notifyItemInserted(position);
+                                    mRecyclerView.scrollToPosition(position);
+
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    });
+
+            snackbar.show();
         }
 
         @Override
