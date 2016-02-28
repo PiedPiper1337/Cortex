@@ -8,15 +8,9 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name="com.orm.SugarApp"
         android:supportsRtl="true"
+        android:name="com.activeandroid.app.Application"
         android:theme="@style/AppTheme">
-
-        <meta-data android:name="DATABASE" android:value="Cortex.db" />
-        <meta-data android:name="VERSION" android:value="1" />
-        <meta-data android:name="QUERY_LOG" android:value="true" />
-        <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="piedpiper1337.github.io.cortex.models" />
-
 
         <activity
             android:name=".activities.HomeActivity"
@@ -33,6 +27,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+
+
+
     </application>
 
 </manifest>

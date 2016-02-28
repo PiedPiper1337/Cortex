@@ -115,8 +115,12 @@ public class SmsQuestionFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_question, container, false);
-//        mTopLinearLayout = (LinearLayout) view.findViewById(R.id.top_linear_layout_questions);
+        return inflater.inflate(R.layout.fragment_question, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        //        mTopLinearLayout = (LinearLayout) view.findViewById(R.id.top_linear_layout_questions);
 //        mBottomLinearLayout = (LinearLayout) view.findViewById(R.id.bottom_linear_layout_questions);
 
         mEditText = (CustomEditText) view.findViewById(R.id.question_edit_text);
@@ -175,7 +179,6 @@ public class SmsQuestionFragment extends BaseFragment {
         mToolbar = (Toolbar) view.findViewById(R.id.question_toolbar);
         ((HomeActivity) mContext).setSupportActionBar(mToolbar);
         ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.question_fragment_title);
-        return view;
     }
 
     /**

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.fragments.HomeFragment;
 import piedpiper1337.github.io.cortex.fragments.SmsQuestionFragment;
+import piedpiper1337.github.io.cortex.models.Question;
 
 public class HomeActivity extends BaseActivity implements NavigationCallback {
     private static final String TAG = HomeActivity.class.getCanonicalName();
@@ -15,6 +16,7 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
         initUI();
+
     }
 
     public void initUI() {

@@ -11,4 +11,8 @@
     <color name="colorAccent">#c8e8ff</color>
     <color name="lightGray">#DDAAAAAA</color>
     <color name="transparentGray">#33888888</color>
+    <color name="black">#000000</color>
+
+    <color name="border_color">#DDAAAAAA</color>
+
 </resources>

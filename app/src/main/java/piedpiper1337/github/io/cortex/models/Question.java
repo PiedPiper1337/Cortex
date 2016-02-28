@@ -1,6 +1,5 @@
 package piedpiper1337.github.io.cortex.models;
 
-import com.orm.SugarRecord;
 
 /**
  * Created by brianzhao on 2/27/16.
@@ -17,8 +16,9 @@ public class Question extends SugarRecord{
     private String mAnswer;
     private String mType;
 
-    public Question() {
 
+    public Question() {
+        super();
     }
 
     public Question(String question, String type) {
