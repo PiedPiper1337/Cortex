@@ -21,7 +21,7 @@ import piedpiper1337.github.io.cortex.adapters.TabAdapter;
  * Created by brianzhao on 2/3/16.
  */
 public class HomeFragment extends BaseFragment {
-    private static final String TAG = BaseFragment.class.getSimpleName();
+    private static final String TAG = HomeFragment.class.getSimpleName();
 
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
@@ -57,7 +57,7 @@ public class HomeFragment extends BaseFragment {
 
         ((HomeActivity) mContext).setSupportActionBar(mToolbar);
 
-        mViewPager.setAdapter(new TabAdapter(getFragmentManager()));
+        mViewPager.setAdapter(new TabAdapter(getChildFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
         mNewQuestionButton = (FloatingActionButton) view.findViewById(R.id.fab);
         mNewQuestionButton.setOnClickListener(new View.OnClickListener() {

@@ -30,17 +30,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import piedpiper1337.github.io.cortex.models.Question;
 import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.HomeActivity;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
 import piedpiper1337.github.io.cortex.utils.CustomEditText;
+import piedpiper1337.github.io.cortex.utils.EnterPressedCallback;
 
 /**
  * Created by brianzhao on 2/11/16.
  */
 public class SmsQuestionFragment extends BaseFragment {
-    private static final String TAG = BaseFragment.class.getSimpleName();
+    private static final String TAG = SmsQuestionFragment.class.getSimpleName();
     private Context mContext;
     private NavigationCallback mNavigationCallback;
     private CustomEditText mEditText;
@@ -73,7 +75,7 @@ public class SmsQuestionFragment extends BaseFragment {
         super.onResume();
         mEditText.requestFocus();
         InputMethodManager imm = (InputMethodManager) ((HomeActivity) mContext).getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(mEditText, InputMethodManager.SHOW_FORCED);
+        imm.showSoftInput(mEditText, InputMethodManager.SHOW_IMPLICIT);
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -86,8 +88,8 @@ public class SmsQuestionFragment extends BaseFragment {
     @Override
     public boolean onBackPressed() {
         mEditText.clearFocus();
-//        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
         return false;
     }
 
@@ -115,22 +117,15 @@ public class SmsQuestionFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_question, container, false);
-//        mTopLinearLayout = (LinearLayout) view.findViewById(R.id.top_linear_layout_questions);
+        return inflater.inflate(R.layout.fragment_sms_question, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        //        mTopLinearLayout = (LinearLayout) view.findViewById(R.id.top_linear_layout_questions);
 //        mBottomLinearLayout = (LinearLayout) view.findViewById(R.id.bottom_linear_layout_questions);
 
         mEditText = (CustomEditText) view.findViewById(R.id.question_edit_text);
-        mEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                boolean handled = false;
-                if (actionId == EditorInfo.IME_ACTION_SEND) {
-                    sendSms(mEditText.getText().toString());
-                    handled = true;
-                }
-                return handled;
-            }
-        });
         mEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -156,6 +151,8 @@ public class SmsQuestionFragment extends BaseFragment {
                     Log.d(getTagName(), "has focus!!!!!");
 //                    mTopLinearLayout.setVisibility(View.VISIBLE);
 //                    mBottomLinearLayout.setVisibility(View.VISIBLE);
+
+
                 } else {
 //                    mTopLinearLayout.setVisibility(View.GONE);
 //                    mBottomLinearLayout.setVisibility(View.GONE);
@@ -175,7 +172,6 @@ public class SmsQuestionFragment extends BaseFragment {
         mToolbar = (Toolbar) view.findViewById(R.id.question_toolbar);
         ((HomeActivity) mContext).setSupportActionBar(mToolbar);
         ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.question_fragment_title);
-        return view;
     }
 
     /**
@@ -193,6 +189,9 @@ public class SmsQuestionFragment extends BaseFragment {
     public boolean messageIsProperLength(String message){
         if (message.length() > 100) {
             Toast.makeText(getActivity(), "Sorry! Message is too long to send.", Toast.LENGTH_SHORT).show();
+            return false;
+        } else if (message.length() == 0) {
+            Toast.makeText(getActivity(), "Sorry! Can't send an empty message.", Toast.LENGTH_SHORT).show();
             return false;
         }
         return true;
@@ -219,16 +218,28 @@ public class SmsQuestionFragment extends BaseFragment {
     }
 
     public void sendSms(String toSend){
+        String originalQuestion = toSend;
         toSend = cleanMessage(toSend);
+
+        Log.d(getTagName(), toSend);
+
+
         if (!messageIsProperLength(toSend)) {
             return;
         }
+
         //append header information here
+        Question question = new Question(originalQuestion, "QUES");
+        question.save();
+
+
 
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(Constants.CORTEX_NUMBER, null, toSend, null, null);
         Toast.makeText(mContext, "Question sent!", Toast.LENGTH_SHORT).show();
+
         ((HomeActivity)mContext).onBackPressed();
+
     }
 
     /**

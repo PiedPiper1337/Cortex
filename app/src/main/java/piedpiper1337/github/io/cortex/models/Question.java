@@ -1,13 +1,59 @@
 package piedpiper1337.github.io.cortex.models;
 
+
 /**
  * Created by brianzhao on 2/27/16.
  */
-public class Question {
-    private String question;
-    private String answer;
-    private int id;
-    private String type;
+
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+
+/**
+ * SugarRecords do not have an ID value until they are saved into the DB, so the actual
+ * question text message has to be sent after this record is saved, so that the ID is
+ * generated
+ */
+
+@Table(name = "Question")
+public class Question extends Model {
+    @Column(name = "Question")
+    private String mQuestion;
+
+    @Column(name = "Answer")
+    private String mAnswer;
+
+    @Column(name = "Type")
+    private String mType;
+
+    @Column(name = "Date")
+    private long mDate;
 
 
+    public Question() {
+        super();
+    }
+
+    public Question(String question, String type) {
+        super();
+        mQuestion = question;
+        mType = type;
+        mDate = System.currentTimeMillis();
+    }
+
+    public String getAnswer() {
+        return mAnswer;
+    }
+
+    public String getQuestion() {
+        return mQuestion;
+    }
+
+    public String getType() {
+        return mType;
+    }
+
+    public void setAnswer(String answer) {
+        mAnswer = answer;
+    }
 }

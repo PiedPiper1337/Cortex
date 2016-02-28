@@ -6,6 +6,7 @@ import android.os.Bundle;
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.fragments.HomeFragment;
 import piedpiper1337.github.io.cortex.fragments.SmsQuestionFragment;
+import piedpiper1337.github.io.cortex.models.Question;
 
 public class HomeActivity extends BaseActivity implements NavigationCallback {
     private static final String TAG = HomeActivity.class.getCanonicalName();
@@ -15,6 +16,7 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
         initUI();
+
     }
 
     public void initUI() {
@@ -33,8 +35,10 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
         SmsQuestionFragment smsQuestionFragment = SmsQuestionFragment.newInstance();
         getFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left,
-                        R.animator.slide_in_left, R.animator.slide_out_right)
+//                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left,
+//                        R.animator.slide_in_left, R.animator.slide_out_right)
+                .setCustomAnimations(R.animator.fade_in, R.animator.fade_out,
+                        R.animator.fade_in, R.animator.fade_out)
                 .replace(R.id.fragment_container, smsQuestionFragment, "smsQuestionFragment")
                 .addToBackStack(null)
                 .commit();
