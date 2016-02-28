@@ -9,6 +9,8 @@ import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
+import java.io.Serializable;
+
 /**
  * SugarRecords do not have an ID value until they are saved into the DB, so the actual
  * question text message has to be sent after this record is saved, so that the ID is
@@ -16,7 +18,7 @@ import com.activeandroid.annotation.Table;
  */
 
 @Table(name = "Question")
-public class Question extends Model {
+public class Question extends Model implements Serializable {
     @Column(name = "Question")
     private String mQuestion;
 

@@ -3,8 +3,11 @@ package piedpiper1337.github.io.cortex.activities;
 import android.app.FragmentManager;
 import android.os.Bundle;
 
+import java.util.List;
+
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.fragments.HomeFragment;
+import piedpiper1337.github.io.cortex.fragments.QuestionPagerFragment;
 import piedpiper1337.github.io.cortex.fragments.SmsQuestionFragment;
 import piedpiper1337.github.io.cortex.models.Question;
 
@@ -44,7 +47,23 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
                 .commit();
     }
 
-//    @Override
+    @Override
+    public void previewQuestions(List<Question> questions, int position) {
+        QuestionPagerFragment questionPagerFragment =
+                QuestionPagerFragment.newInstance(questions,position);
+
+        getFragmentManager()
+                .beginTransaction()
+//                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left,
+//                        R.animator.slide_in_left, R.animator.slide_out_right)
+                .setCustomAnimations(R.animator.fade_in, R.animator.fade_out,
+                        R.animator.fade_in, R.animator.fade_out)
+                .replace(R.id.fragment_container, questionPagerFragment , "questionPagerFragment")
+                .addToBackStack(null)
+                .commit();
+    }
+
+    //    @Override
 //    public boolean onCreateOptionsMenu(Menu menu) {
 //        // Inflate the menu; this adds items to the action bar if it is present.
 //        getMenuInflater().inflate(R.menu.menu_base, menu);
