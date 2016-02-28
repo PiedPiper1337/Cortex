@@ -35,8 +35,10 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
         SmsQuestionFragment smsQuestionFragment = SmsQuestionFragment.newInstance();
         getFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left,
-                        R.animator.slide_in_left, R.animator.slide_out_right)
+//                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left,
+//                        R.animator.slide_in_left, R.animator.slide_out_right)
+                .setCustomAnimations(R.animator.fade_in, R.animator.fade_out,
+                        R.animator.fade_in, R.animator.fade_out)
                 .replace(R.id.fragment_container, smsQuestionFragment, "smsQuestionFragment")
                 .addToBackStack(null)
                 .commit();

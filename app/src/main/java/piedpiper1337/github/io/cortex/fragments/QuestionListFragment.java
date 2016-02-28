@@ -71,8 +71,8 @@ public class QuestionListFragment extends BaseFragment {
     private void updateUI() {
         //TODO initialize the database list of questions
 
-//        mQuestionList = new Select().from(Question.class).orderBy("Date DESC").execute();
-        mQuestionList = new Select().from(Question.class).execute();
+        mQuestionList = new Select().from(Question.class).orderBy("Date DESC").execute();
+//        mQuestionList = new Select().from(Question.class).execute();
 
 
         if (mQuestionList != null) {
@@ -80,15 +80,11 @@ public class QuestionListFragment extends BaseFragment {
                 mRecyclerView.setVisibility(View.GONE);
 
                 Animation fadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.fade_in);
-//                mBackgroundLayout.setAlpha(0.0f);
                 mBackgroundLayout.setVisibility(View.VISIBLE);
                 mBackgroundLayout.startAnimation(fadeInAnimation);
 
-
-
             } else {
                 QuestionAdapter questionAdapter = new QuestionAdapter(mQuestionList, this);
-
                 ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(questionAdapter);
                 ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
                 touchHelper.attachToRecyclerView(mRecyclerView);
