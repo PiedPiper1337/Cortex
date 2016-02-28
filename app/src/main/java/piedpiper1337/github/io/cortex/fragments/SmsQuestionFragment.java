@@ -40,7 +40,7 @@ import piedpiper1337.github.io.cortex.utils.CustomEditText;
  * Created by brianzhao on 2/11/16.
  */
 public class SmsQuestionFragment extends BaseFragment {
-    private static final String TAG = BaseFragment.class.getSimpleName();
+    private static final String TAG = SmsQuestionFragment.class.getSimpleName();
     private Context mContext;
     private NavigationCallback mNavigationCallback;
     private CustomEditText mEditText;

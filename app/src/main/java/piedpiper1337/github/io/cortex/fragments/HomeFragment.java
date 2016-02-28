@@ -21,7 +21,7 @@ import piedpiper1337.github.io.cortex.adapters.TabAdapter;
  * Created by brianzhao on 2/3/16.
  */
 public class HomeFragment extends BaseFragment {
-    private static final String TAG = BaseFragment.class.getSimpleName();
+    private static final String TAG = HomeFragment.class.getSimpleName();
 
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
