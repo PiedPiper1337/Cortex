@@ -47,7 +47,8 @@
             android:imeActionLabel="Send!"
             android:inputType="textCapSentences"
             android:singleLine="true"
-            android:padding="10dp">
+            android:padding="10dp"
+            >
         </piedpiper1337.github.io.cortex.utils.CustomEditText>
 
 

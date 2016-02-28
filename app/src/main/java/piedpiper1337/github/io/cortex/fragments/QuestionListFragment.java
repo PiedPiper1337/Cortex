@@ -6,22 +6,28 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.orm.query.Select;
+
+import com.activeandroid.query.Select;
 
 import java.util.List;
 
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
 import piedpiper1337.github.io.cortex.models.Question;
+import piedpiper1337.github.io.cortex.utils.ItemTouchHelperAdapter;
+import piedpiper1337.github.io.cortex.utils.SimpleItemTouchHelperCallback;
 
 /**
  * Created by brianzhao on 2/27/16.
@@ -49,8 +55,11 @@ public class QuestionListFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_question_list, container, false);
         mBackgroundLayout = (RelativeLayout) view.findViewById(R.id.question_list_background_relative_layout);
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.question_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+
         updateUI();
 
         return view;
@@ -60,13 +69,30 @@ public class QuestionListFragment extends BaseFragment {
      * regenerate list of questions by doing db call
      */
     private void updateUI() {
-//        Question.findAll(Question.class);
-        mQuestionList = Select.from(Question.class).list();
+        //TODO initialize the database list of questions
+
+//        mQuestionList = new Select().from(Question.class).orderBy("Date DESC").execute();
+        mQuestionList = new Select().from(Question.class).execute();
+
+
         if (mQuestionList != null) {
             if (mQuestionList.size() == 0) {
                 mRecyclerView.setVisibility(View.GONE);
+
+                Animation fadeInAnimation = AnimationUtils.loadAnimation(mContext, R.anim.fade_in);
+//                mBackgroundLayout.setAlpha(0.0f);
                 mBackgroundLayout.setVisibility(View.VISIBLE);
+                mBackgroundLayout.startAnimation(fadeInAnimation);
+
+
+
             } else {
+                QuestionAdapter questionAdapter = new QuestionAdapter(mQuestionList, this);
+
+                ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(questionAdapter);
+                ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+                touchHelper.attachToRecyclerView(mRecyclerView);
+                mRecyclerView.setAdapter(questionAdapter);
 
             }
         } else {
@@ -118,11 +144,15 @@ public class QuestionListFragment extends BaseFragment {
     }
 
 
-    private class QuestionAdapter extends RecyclerView.Adapter<QuestionHolder> {
+    private class QuestionAdapter
+            extends RecyclerView.Adapter<QuestionHolder>
+            implements ItemTouchHelperAdapter {
         private List<Question> mQuestions;
+        private QuestionListFragment mQuestionListFragment;
 
-        public QuestionAdapter(List<Question> questions) {
+        public QuestionAdapter(List<Question> questions, QuestionListFragment questionListFragment) {
             mQuestions = questions;
+            mQuestionListFragment = questionListFragment;
         }
 
         @Override
@@ -142,8 +172,22 @@ public class QuestionListFragment extends BaseFragment {
             Question question = mQuestions.get(position);
             holder.bindQuestion(question);
         }
+
+        @Override
+        public void onItemDismiss(int position) {
+            Question toBeDeleted = mQuestions.remove(position);
+            toBeDeleted.delete();
+            if (mQuestions.size() > 0) {
+                notifyItemRemoved(position);
+            } else {
+                mQuestionListFragment.updateUI();
+            }
+        }
+
+        @Override
+        public void onItemMove(int fromPosition, int toPosition) {
+            throw new UnsupportedOperationException("Haven't implemented this yet");
+        }
     }
-
-
 
 }

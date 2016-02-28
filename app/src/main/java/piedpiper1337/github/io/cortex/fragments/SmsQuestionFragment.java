@@ -30,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import piedpiper1337.github.io.cortex.models.Question;
 import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.HomeActivity;
@@ -73,7 +74,7 @@ public class SmsQuestionFragment extends BaseFragment {
         super.onResume();
         mEditText.requestFocus();
         InputMethodManager imm = (InputMethodManager) ((HomeActivity) mContext).getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(mEditText, InputMethodManager.SHOW_FORCED);
+        imm.showSoftInput(mEditText, InputMethodManager.SHOW_IMPLICIT);
 
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.SEND_SMS)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -86,8 +87,8 @@ public class SmsQuestionFragment extends BaseFragment {
     @Override
     public boolean onBackPressed() {
         mEditText.clearFocus();
-//        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
         return false;
     }
 
@@ -160,6 +161,8 @@ public class SmsQuestionFragment extends BaseFragment {
                     Log.d(getTagName(), "has focus!!!!!");
 //                    mTopLinearLayout.setVisibility(View.VISIBLE);
 //                    mBottomLinearLayout.setVisibility(View.VISIBLE);
+
+
                 } else {
 //                    mTopLinearLayout.setVisibility(View.GONE);
 //                    mBottomLinearLayout.setVisibility(View.GONE);
@@ -197,6 +200,9 @@ public class SmsQuestionFragment extends BaseFragment {
         if (message.length() > 100) {
             Toast.makeText(getActivity(), "Sorry! Message is too long to send.", Toast.LENGTH_SHORT).show();
             return false;
+        } else if (message.length() == 0) {
+            Toast.makeText(getActivity(), "Sorry! Can't send an empty message.", Toast.LENGTH_SHORT).show();
+            return false;
         }
         return true;
     }
@@ -222,16 +228,28 @@ public class SmsQuestionFragment extends BaseFragment {
     }
 
     public void sendSms(String toSend){
+        String originalQuestion = toSend;
         toSend = cleanMessage(toSend);
+
+        Log.d(getTagName(), toSend);
+
+
         if (!messageIsProperLength(toSend)) {
             return;
         }
+
         //append header information here
+        Question question = new Question(originalQuestion, "QUES");
+        question.save();
+
+
 
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(Constants.CORTEX_NUMBER, null, toSend, null, null);
         Toast.makeText(mContext, "Question sent!", Toast.LENGTH_SHORT).show();
+
         ((HomeActivity)mContext).onBackPressed();
+
     }
 
     /**

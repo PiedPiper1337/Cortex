@@ -57,7 +57,7 @@ public class HomeFragment extends BaseFragment {
 
         ((HomeActivity) mContext).setSupportActionBar(mToolbar);
 
-        mViewPager.setAdapter(new TabAdapter(getFragmentManager()));
+        mViewPager.setAdapter(new TabAdapter(getChildFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
         mNewQuestionButton = (FloatingActionButton) view.findViewById(R.id.fab);
         mNewQuestionButton.setOnClickListener(new View.OnClickListener() {

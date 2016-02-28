@@ -5,16 +5,29 @@ package piedpiper1337.github.io.cortex.models;
  * Created by brianzhao on 2/27/16.
  */
 
+import com.activeandroid.Model;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+
 /**
  * SugarRecords do not have an ID value until they are saved into the DB, so the actual
  * question text message has to be sent after this record is saved, so that the ID is
  * generated
  */
 
-public class Question extends SugarRecord{
+@Table(name = "Question")
+public class Question extends Model {
+    @Column(name = "Question")
     private String mQuestion;
+
+    @Column(name = "Answer")
     private String mAnswer;
+
+    @Column(name = "Type")
     private String mType;
+
+    @Column(name = "Date")
+    private long mDate;
 
 
     public Question() {
@@ -22,8 +35,10 @@ public class Question extends SugarRecord{
     }
 
     public Question(String question, String type) {
+        super();
         mQuestion = question;
         mType = type;
+        mDate = System.currentTimeMillis();
     }
 
     public String getAnswer() {
@@ -38,4 +53,7 @@ public class Question extends SugarRecord{
         return mType;
     }
 
+    public void setAnswer(String answer) {
+        mAnswer = answer;
+    }
 }
