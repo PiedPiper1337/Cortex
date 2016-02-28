@@ -118,9 +118,9 @@ public class QuestionListFragment extends BaseFragment {
 
             } else {
                 QuestionAdapter questionAdapter = new QuestionAdapter(mQuestionList, this);
-                ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(questionAdapter);
-                ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
-                touchHelper.attachToRecyclerView(mRecyclerView);
+//                ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(questionAdapter);
+//                ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+//                touchHelper.attachToRecyclerView(mRecyclerView);
                 mRecyclerView.setAdapter(questionAdapter);
 
                 int previousPosition = SharedPreferenceUtil.readPreference(mContext,
