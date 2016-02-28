@@ -17,7 +17,6 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.activeandroid.query.Select;
 
@@ -26,7 +25,9 @@ import java.util.List;
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
 import piedpiper1337.github.io.cortex.models.Question;
+import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.utils.ItemTouchHelperAdapter;
+import piedpiper1337.github.io.cortex.utils.SharedPreferenceUtil;
 import piedpiper1337.github.io.cortex.utils.SimpleItemTouchHelperCallback;
 
 /**
@@ -39,6 +40,7 @@ public class QuestionListFragment extends BaseFragment {
     private RecyclerView mRecyclerView;
     private RelativeLayout mBackgroundLayout;
     private List<Question> mQuestionList;
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -83,8 +85,14 @@ public class QuestionListFragment extends BaseFragment {
                 ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
                 touchHelper.attachToRecyclerView(mRecyclerView);
                 mRecyclerView.setAdapter(questionAdapter);
-                swapToRecyclerView();
 
+                int previousPosition = SharedPreferenceUtil.readPreference(mContext,
+                        Constants.SharedPreferenceKeys.RECYCLER_VIEW_POSITION, -1);
+                if (previousPosition != -1) {
+                    mRecyclerView.scrollToPosition(previousPosition);
+                }
+                SharedPreferenceUtil.clearPreferences(mContext);
+                swapToRecyclerView();
             }
         } else {
             Log.e(getTagName(), "Null question list from db call!!!");
@@ -144,7 +152,11 @@ public class QuestionListFragment extends BaseFragment {
         //TODO make new fragment
         @Override
         public void onClick(View view) {
-            Toast.makeText(getActivity(), "NEED TO MAKE NEW FRAGMENT!", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity(), "NEED TO MAKE NEW FRAGMENT!", Toast.LENGTH_SHORT).show();
+            SharedPreferenceUtil.savePreference(mContext,
+                    Constants.SharedPreferenceKeys.RECYCLER_VIEW_POSITION,
+                    this.getAdapterPosition());
+            mNavigationCallback.previewQuestions(mQuestionList, this.getAdapterPosition());
         }
     }
 
