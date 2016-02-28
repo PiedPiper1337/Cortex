@@ -2,7 +2,7 @@ package piedpiper1337.github.io.cortex.activities;
 
 import java.util.List;
 
-import piedpiper1337.github.io.cortex.models.Question;
+import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 
 /**
  * Created by brianzhao on 2/11/16.
@@ -12,7 +12,7 @@ public interface NavigationCallback {
      * launches the SMS Question fragment
      * when FAB + is clicked
      */
-    void askQuestion();
+    void askQuestion(String questionType);
 
     /**
      * launches the fragment which has a viewpager
@@ -20,5 +20,5 @@ public interface NavigationCallback {
      * @param questions
      * @param position
      */
-    void previewQuestions(List<Question> questions,int position);
+    void previewQuestions(List<SMSQueryable> questions, int position);
 }

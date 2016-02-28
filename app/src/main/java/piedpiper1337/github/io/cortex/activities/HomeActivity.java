@@ -10,6 +10,8 @@ import piedpiper1337.github.io.cortex.fragments.HomeFragment;
 import piedpiper1337.github.io.cortex.fragments.QuestionPagerFragment;
 import piedpiper1337.github.io.cortex.fragments.SmsQuestionFragment;
 import piedpiper1337.github.io.cortex.models.Question;
+import piedpiper1337.github.io.cortex.models.Wiki;
+import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 
 public class HomeActivity extends BaseActivity implements NavigationCallback {
     private static final String TAG = HomeActivity.class.getCanonicalName();
@@ -18,6 +20,8 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
+        Wiki wiki = new Wiki("hi", "there");
+        wiki.save();
         initUI();
 
     }
@@ -34,8 +38,8 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
     }
 
     @Override
-    public void askQuestion() {
-        SmsQuestionFragment smsQuestionFragment = SmsQuestionFragment.newInstance();
+    public void askQuestion(String questionType) {
+        SmsQuestionFragment smsQuestionFragment = SmsQuestionFragment.newInstance(questionType);
         getFragmentManager()
                 .beginTransaction()
 //                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left,
@@ -48,16 +52,14 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
     }
 
     @Override
-    public void previewQuestions(List<Question> questions, int position) {
+    public void previewQuestions(List<SMSQueryable> questions, int position) {
         QuestionPagerFragment questionPagerFragment =
                 QuestionPagerFragment.newInstance(questions,position);
 
         getFragmentManager()
                 .beginTransaction()
-//                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left,
-//                        R.animator.slide_in_left, R.animator.slide_out_right)
-                .setCustomAnimations(R.animator.fade_in, R.animator.fade_out,
-                        R.animator.fade_in, R.animator.fade_out)
+                .setCustomAnimations(R.animator.fade_in_fast, R.animator.fade_out_fast,
+                        R.animator.fade_in_fast, R.animator.fade_out_fast)
                 .replace(R.id.fragment_container, questionPagerFragment , "questionPagerFragment")
                 .addToBackStack(null)
                 .commit();

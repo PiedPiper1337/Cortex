@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,10 @@ import java.io.Serializable;
 import java.util.List;
 
 import piedpiper1337.github.io.cortex.R;
+import piedpiper1337.github.io.cortex.activities.HomeActivity;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
 import piedpiper1337.github.io.cortex.models.Question;
+import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 
 /**
  * Created by brianzhao on 2/28/16.
@@ -25,10 +28,11 @@ public class QuestionPagerFragment extends BaseFragment {
     private Context mContext;
     private NavigationCallback mNavigationCallback;
 
-    private List<Question> mQuestions;
+
+    private List<SMSQueryable> mQuestions;
     private int mPosition;
 
-
+    private Toolbar mToolbar;
     private ViewPager mViewPager;
 
 
@@ -36,7 +40,7 @@ public class QuestionPagerFragment extends BaseFragment {
     private static final String POSITION = "io.github.piedpiper1337.cortex.POSITION";
 
 
-    public static QuestionPagerFragment newInstance(List<Question> questions, int position) {
+    public static QuestionPagerFragment newInstance(List<SMSQueryable> questions, int position) {
         Bundle args = new Bundle();
         args.putSerializable(QUESTION_LIST, (Serializable) questions);
         args.putSerializable(POSITION, position);
@@ -59,7 +63,7 @@ public class QuestionPagerFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mQuestions = (List<Question>) getArguments().getSerializable(QUESTION_LIST);
+        mQuestions = (List<SMSQueryable>) getArguments().getSerializable(QUESTION_LIST);
         mPosition = (int) getArguments().getSerializable(POSITION);
     }
 
@@ -85,6 +89,10 @@ public class QuestionPagerFragment extends BaseFragment {
             }
         });
         mViewPager.setCurrentItem(mPosition);
+
+        mToolbar = (Toolbar) view.findViewById(R.id.fragment_question_pager_toolbar);
+        ((HomeActivity) mContext).setSupportActionBar(mToolbar);
+        ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.your_questions);
 
     }
 

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,13 +21,16 @@ import android.widget.TextView;
 
 import com.activeandroid.query.Select;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
 import piedpiper1337.github.io.cortex.models.Question;
+import piedpiper1337.github.io.cortex.models.Wiki;
 import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.utils.ItemTouchHelperAdapter;
+import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 import piedpiper1337.github.io.cortex.utils.SharedPreferenceUtil;
 import piedpiper1337.github.io.cortex.utils.SimpleItemTouchHelperCallback;
 
@@ -39,7 +43,20 @@ public class QuestionListFragment extends BaseFragment {
     private NavigationCallback mNavigationCallback;
     private RecyclerView mRecyclerView;
     private RelativeLayout mBackgroundLayout;
-    private List<Question> mQuestionList;
+    private FloatingActionButton mNewQuestionButton;
+    private List<SMSQueryable> mQuestionList;
+
+    private static final String QUESTION_TYPE = "io.github.piedpiper1337.cortex.QUESTION_TYPE";
+
+
+    public static QuestionListFragment newInstance(String questionType) {
+
+        Bundle args = new Bundle();
+        args.putString(QUESTION_TYPE, questionType);
+        QuestionListFragment fragment = new QuestionListFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
 
     @Override
@@ -55,13 +72,22 @@ public class QuestionListFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_question_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_sms_list, container, false);
         mBackgroundLayout = (RelativeLayout) view.findViewById(R.id.question_list_background_relative_layout);
+
+        mNewQuestionButton = (FloatingActionButton) view.findViewById(R.id.ask_sms_question_fab);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.question_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         updateUI();
+
+        mNewQuestionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mNavigationCallback.askQuestion(getArguments().getString(QUESTION_TYPE));
+            }
+        });
         return view;
     }
 
@@ -70,10 +96,21 @@ public class QuestionListFragment extends BaseFragment {
      */
     private void updateUI() {
         //TODO initialize the database list of questions
+        if (getArguments().get(QUESTION_TYPE).equals(Constants.SMS_TYPE.QUESTION_TYPE)) {
+            List<Question> questions = new Select().from(Question.class).orderBy("Date DESC").execute();
+            mQuestionList = new ArrayList<>();
+            for (Question q : questions) {
+                mQuestionList.add(q);
+            }
+        } else if (getArguments().get(QUESTION_TYPE).equals(Constants.SMS_TYPE.WIKI_TYPE)) {
+            List<Wiki> wikis= new Select().from(Wiki.class).orderBy("Date DESC").execute();
+            mQuestionList = new ArrayList<>();
+            for (Wiki w : wikis) {
+                mQuestionList.add(w);
+            }
+        }
 
-        mQuestionList = new Select().from(Question.class).orderBy("Date DESC").execute();
 //        mQuestionList = new Select().from(Question.class).execute();
-
 
         if (mQuestionList != null) {
             if (mQuestionList.size() == 0) {
@@ -127,7 +164,7 @@ public class QuestionListFragment extends BaseFragment {
     public class QuestionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mQuestionTextView;
         private TextView mAnswerTextView;
-        private Question mQuestion;
+        private SMSQueryable mQuestion;
 
         public QuestionHolder(final View itemView) {
             super(itemView);
@@ -137,7 +174,7 @@ public class QuestionListFragment extends BaseFragment {
 
         }
 
-        public void bindQuestion(Question question) {
+        public void bindQuestion(SMSQueryable question) {
             mQuestion = question;
             mQuestionTextView.setText(question.getQuestion());
             String answer = question.getAnswer();
@@ -164,10 +201,10 @@ public class QuestionListFragment extends BaseFragment {
     private class QuestionAdapter
             extends RecyclerView.Adapter<QuestionHolder>
             implements ItemTouchHelperAdapter {
-        private List<Question> mQuestions;
+        private List<SMSQueryable> mQuestions;
         private QuestionListFragment mQuestionListFragment;
 
-        public QuestionAdapter(List<Question> questions, QuestionListFragment questionListFragment) {
+        public QuestionAdapter(List<SMSQueryable> questions, QuestionListFragment questionListFragment) {
             mQuestions = questions;
             mQuestionListFragment = questionListFragment;
         }
@@ -186,13 +223,13 @@ public class QuestionListFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(QuestionHolder holder, int position) {
-            Question question = mQuestions.get(position);
+            SMSQueryable question = mQuestions.get(position);
             holder.bindQuestion(question);
         }
 
         @Override
         public void onItemDismiss(final int position) {
-            final Question toBeDeleted = mQuestions.remove(position);
+            final SMSQueryable toBeDeleted = mQuestions.remove(position);
             notifyItemRemoved(position);
 
             final Snackbar snackbar = Snackbar

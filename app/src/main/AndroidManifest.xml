@@ -14,7 +14,7 @@
 
         <meta-data
             android:name="AA_MODELS"
-            android:value="piedpiper1337.github.io.cortex.models.Question" />
+            android:value="piedpiper1337.github.io.cortex.models.Question,piedpiper1337.github.io.cortex.models.Wiki " />
 
         <activity
             android:name=".activities.HomeActivity"
