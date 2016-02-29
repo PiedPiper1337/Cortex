@@ -29,6 +29,8 @@ import android.widget.TextView;
 import com.activeandroid.query.Select;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -147,6 +149,12 @@ public class QuestionListFragment extends BaseFragment {
                 mNavigationCallback.askQuestion(Constants.SMS_TYPE.QUESTION_TYPE);
             }
         });
+
+        //        //TODO add items to the drawer
+        Drawer drawer = new DrawerBuilder()
+                .withActivity((Activity) mContext)
+                .withToolbar(mToolbar)
+                .buildForFragment();
 
 //        //asynchronously check for finished rawdata, then move them to appropriate table, + re-query
 //        new AsyncTask<Void, Void, Long>() {
