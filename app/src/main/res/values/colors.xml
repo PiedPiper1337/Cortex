@@ -15,5 +15,10 @@
     <color name='lightOrange'>#99ffd11a </color>
 
     <color name="border_color">#66CCCCCC</color>
+    <color name="white">#FFFFFF</color>
+    <color name="white_pressed">#FFEEEEEE</color>
+    <color name="half_black">#222222</color>
 
+    <color name="fabColor">#2b82c4</color>
+    <color name="fabColorPressed">#662b82c4</color>
 </resources>

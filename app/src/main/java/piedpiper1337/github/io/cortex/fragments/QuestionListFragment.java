@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -29,6 +28,7 @@ import android.widget.TextView;
 import com.activeandroid.query.Select;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 
@@ -58,7 +58,7 @@ public class QuestionListFragment extends BaseFragment {
     private RecyclerView mRecyclerView;
     private RelativeLayout mBackgroundLayout;
     private LinearLayout mForegroundLayout;
-    private FloatingActionButton mNewQuestionButton;
+    private FloatingActionsMenu mFloatingActionsMenu;
     private List<SMSQueryable> mQuestionList;
     private Toolbar mToolbar;
     private Map<String, String> questionTypeToLetterMap;
@@ -131,24 +131,27 @@ public class QuestionListFragment extends BaseFragment {
         mForegroundLayout = (LinearLayout) view.findViewById(R.id.sms_list_foreground_layout);
         mToolbar = (Toolbar) view.findViewById(R.id.fragment_sms_list_toolbar);
         ((HomeActivity) mContext).setSupportActionBar(mToolbar);
-        ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.your_questions);
+        ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.app_name);
 
-        mNewQuestionButton = (FloatingActionButton) view.findViewById(R.id.ask_sms_question_fab);
+        mFloatingActionsMenu = (FloatingActionsMenu) view.findViewById(R.id.send_actions);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.question_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
+
+
+
         updateUI();
 
-        mNewQuestionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO make this like google hangouts, where you choose the type of question
-//                https://github.com/Clans/FloatingActionButton
-                mNavigationCallback.askQuestion(Constants.SMS_TYPE.QUESTION_TYPE);
-            }
-        });
+//        mFloatingActionsMenu.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                //TODO make this like google hangouts, where you choose the type of question
+////                https://github.com/Clans/FloatingActionButton
+//                mNavigationCallback.askQuestion(Constants.SMS_TYPE.QUESTION_TYPE);
+//            }
+//        });
 
         //        //TODO add items to the drawer
         Drawer drawer = new DrawerBuilder()
@@ -372,7 +375,7 @@ public class QuestionListFragment extends BaseFragment {
                                 //original location
 
 //                                https://stackoverflow.com/questions/35074558/android-floating-action-button-not-returning-to-initial-position
-                                mNewQuestionButton.setTranslationY(0.0f);
+                                mFloatingActionsMenu.setTranslationY(0.0f);
                             }
                         }
                     });

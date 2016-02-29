@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:fab="http://schemas.android.com/tools"
     android:id="@+id/coordinatorLayout"
     >
 
@@ -64,14 +65,59 @@
     </LinearLayout>
 
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/ask_sms_question_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_input_add"
-        android:tint="#FFFFFF"
-        app:backgroundTint="#2b82c4"
-        />
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/ask_sms_question_fab"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|right|end"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--android:src="@android:drawable/ic_input_add"-->
+        <!--android:tint="#FFFFFF"-->
+        <!--app:backgroundTint="#2b82c4"-->
+        <!--/>-->
+
+
+
+
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:layout_margin="16dp"
+            android:id="@+id/send_actions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            fab:fab_addButtonColorNormal="@color/fabColor"
+            fab:fab_addButtonColorPressed="@color/fabColorPressed"
+
+            fab:fab_addButtonPlusIconColor="@color/white">
+            <!--fab:fab_labelStyle="@style/menu_labels_style"-->
+
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/action_b"
+                android:paddingBottom="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/book"
+                android:scaleType="centerInside"
+                fab:fab_colorNormal="@color/fabColor"
+                fab:fab_colorPressed="@color/fabColorPressed"
+                fab:fab_title="Wikipedia Lookup!"/>
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/action_a"
+                android:paddingBottom="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/question"
+                android:scaleType="centerInside"
+                fab:fab_colorNormal="@color/fabColor"
+                fab:fab_colorPressed="@color/fabColorPressed"
+                fab:fab_title="Ask a question!"/>
+
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
+
+
+
 </android.support.design.widget.CoordinatorLayout>
