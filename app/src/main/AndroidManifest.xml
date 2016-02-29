@@ -16,7 +16,7 @@
         <meta-data
             android:name="AA_MODELS"
             android:value=
-                "piedpiper1337.github.io.cortex.models.Question,piedpiper1337.github.io.cortex.models.Wiki,piedpiper1337.github.io.cortex.models.RawData"/>
+                "piedpiper1337.github.io.cortex.models.SMSQuery,piedpiper1337.github.io.cortex.models.RawData"/>
 
         <meta-data android:name="AA_SERIALIZERS"
                    android:value="piedpiper1337.github.io.cortex.utils.HashMapSerializer" />

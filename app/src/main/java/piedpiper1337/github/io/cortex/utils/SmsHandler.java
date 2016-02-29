@@ -52,14 +52,14 @@ public class SmsHandler {
     }
 
 
-    /**
+    /**TODO MAKE THIS ATTACH DIFFERENT HEADERS BASED ON QUESTION TYPE
      * sends an sms question
      * will check if message is valid, and if not, won't send
      *
      * @param toSend             the original string to send
      * @param questionDatabaseID id from activeandroid sqlite db
      */
-    public void sendSmsQuestion(String toSend, long questionDatabaseID) {
+    public void sendSmsQuestion(String toSend, long questionDatabaseID, String questionType) {
         toSend = cleanMessage(toSend);
         if (!messageIsProperLength(toSend)) {
             return;

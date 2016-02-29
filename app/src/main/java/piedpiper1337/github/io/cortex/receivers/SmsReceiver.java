@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
@@ -101,6 +102,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 str += "\n";
             }
 
+            int numCompleted = 0;
             for (RawData rawDataToUpdate : rawDataMap.values()) {
                 if (rawDataToUpdate.getNumMessagesExpected() ==
                         rawDataToUpdate.getCurrentlyReceivedMessagesMap().keySet().size()) {
@@ -111,8 +113,15 @@ public class SmsReceiver extends BroadcastReceiver {
                                 .append(' ');
                     }
                     rawDataToUpdate.setAnswer(finalMessage.toString().trim());
+                    numCompleted++;
                 }
                 rawDataToUpdate.save();
+            }
+            if (numCompleted > 0) {
+                Intent myintent = new Intent("custom-event-name");
+                // You can also include some extra data.
+                intent.putExtra("message", "This is my message!");
+                LocalBroadcastManager.getInstance(context).sendBroadcast(myintent);
             }
 
             // Display the entire SMS Message

@@ -1,16 +1,26 @@
 package piedpiper1337.github.io.cortex.models;
 
+
+/**
+ * Created by brianzhao on 2/27/16.
+ */
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
+import java.io.Serializable;
+
 import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 
 /**
- * Created by brianzhao on 2/28/16.
+ * SugarRecords do not have an ID value until they are saved into the DB, so the actual
+ * question text message has to be sent after this record is saved, so that the ID is
+ * generated
  */
-@Table(name = "Wiki")
-public class Wiki extends Model implements SMSQueryable {
+
+@Table(name = "SMSQuery")
+public class SMSQuery extends Model implements Serializable, SMSQueryable {
     @Column(name = "Question")
     private String mQuestion;
 
@@ -23,11 +33,12 @@ public class Wiki extends Model implements SMSQueryable {
     @Column(name = "Date")
     private long mDate;
 
-    public Wiki() {
+
+    public SMSQuery() {
         super();
     }
 
-    public Wiki(String question, String type) {
+    public SMSQuery(String question, String type) {
         super();
         mQuestion = question;
         mType = type;
@@ -50,8 +61,7 @@ public class Wiki extends Model implements SMSQueryable {
         mAnswer = answer;
     }
 
-    public void updateDate(){
+    public void updateDate() {
         mDate = System.currentTimeMillis();
     }
 }
-

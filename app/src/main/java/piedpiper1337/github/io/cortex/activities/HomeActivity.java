@@ -2,19 +2,13 @@ package piedpiper1337.github.io.cortex.activities;
 
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.util.Log;
-
-import com.activeandroid.query.Select;
 
 import java.util.List;
 
 import piedpiper1337.github.io.cortex.R;
-import piedpiper1337.github.io.cortex.fragments.HomeFragment;
+import piedpiper1337.github.io.cortex.fragments.QuestionListFragment;
 import piedpiper1337.github.io.cortex.fragments.QuestionPagerFragment;
 import piedpiper1337.github.io.cortex.fragments.SmsQuestionFragment;
-import piedpiper1337.github.io.cortex.models.Question;
-import piedpiper1337.github.io.cortex.models.RawData;
-import piedpiper1337.github.io.cortex.models.Wiki;
 import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 
 public class HomeActivity extends BaseActivity implements NavigationCallback {
@@ -26,18 +20,18 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
         setContentView(R.layout.activity_base);
         initUI();
 
-        List<RawData> rawDatas = new Select().from(RawData.class).execute();
-        Log.d("WTF!!!", rawDatas.toString());
+//        List<RawData> rawDatas = new Select().from(RawData.class).execute();
+//        Log.d("WTF!!!", rawDatas.toString());
 
     }
 
     public void initUI() {
         FragmentManager fragmentManager = getFragmentManager();
         if (fragmentManager.findFragmentById(R.id.fragment_container) == null) {
-            HomeFragment homeFragment = new HomeFragment();
+            QuestionListFragment questionListFragment= QuestionListFragment.newInstance();
             fragmentManager
                     .beginTransaction()
-                    .add(R.id.fragment_container, homeFragment, "homeFragment")
+                    .add(R.id.fragment_container, questionListFragment, "questionListFragment")
                     .commit();
         }
     }
@@ -49,8 +43,8 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
                 .beginTransaction()
 //                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left,
 //                        R.animator.slide_in_left, R.animator.slide_out_right)
-                .setCustomAnimations(R.animator.fade_in, R.animator.fade_out,
-                        R.animator.fade_in, R.animator.fade_out)
+                .setCustomAnimations(R.animator.fade_in_fast, R.animator.fade_out_fast,
+                        R.animator.fade_in_fast, R.animator.fade_out_fast)
                 .replace(R.id.fragment_container, smsQuestionFragment, "smsQuestionFragment")
                 .addToBackStack(null)
                 .commit();

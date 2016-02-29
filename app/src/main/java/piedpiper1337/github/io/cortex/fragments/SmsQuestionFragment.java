@@ -18,7 +18,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,17 +25,20 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
-import piedpiper1337.github.io.cortex.models.Question;
-import piedpiper1337.github.io.cortex.models.Wiki;
-import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.HomeActivity;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
+import piedpiper1337.github.io.cortex.models.SMSQuery;
+import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.utils.CustomEditText;
 import piedpiper1337.github.io.cortex.utils.SmsHandler;
 
 /**
  * Created by brianzhao on 2/11/16.
+ */
+
+/**
+ * where you ask your question via sms
  */
 public class SmsQuestionFragment extends BaseFragment {
     private static final String TAG = SmsQuestionFragment.class.getSimpleName();
@@ -48,8 +50,8 @@ public class SmsQuestionFragment extends BaseFragment {
     private LinearLayout mTopLinearLayout;
     private LinearLayout mBottomLinearLayout;
     private Toolbar mToolbar;
-    private static final int REQUEST_SMS_PERMISSION= 1;
-    private static final int REQUEST_SMS_RECEIVE_PERMISSION= 2;
+    private static final int REQUEST_SMS_PERMISSION = 1;
+    private static final int REQUEST_SMS_RECEIVE_PERMISSION = 2;
     private static final String FRAGMENT_DIALOG = "dialog";
 
     private static final String QUESTION_TYPE = "io.github.piedpiper1337.cortex.QUESTION_TYPE";
@@ -103,7 +105,7 @@ public class SmsQuestionFragment extends BaseFragment {
     @Override
     public boolean onBackPressed() {
         mEditText.clearFocus();
-        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mEditText.getWindowToken(), 0);
         return false;
     }
@@ -155,10 +157,8 @@ public class SmsQuestionFragment extends BaseFragment {
         mEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN)
-                {
-                    switch (keyCode)
-                    {
+                if (event.getAction() == KeyEvent.ACTION_DOWN) {
+                    switch (keyCode) {
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                         case KeyEvent.KEYCODE_ENTER:
                             sendSms(mEditText.getText().toString());
@@ -201,6 +201,7 @@ public class SmsQuestionFragment extends BaseFragment {
     /**
      * old way of sending message by using hangouts
      * not used
+     *
      * @param toSend
      */
     public void sendSmsIntent(String toSend) {
@@ -212,18 +213,12 @@ public class SmsQuestionFragment extends BaseFragment {
         startActivity(it);
     }
 
-    public void sendSms(String toSend){
+    public void sendSms(String toSend) {
         if (mSmsHandler.canBeSent(toSend)) {
-            if (mQuestionType.equals(Constants.SMS_TYPE.QUESTION_TYPE)) {
-                Question question = new Question(toSend, Constants.SMS_TYPE.QUESTION_TYPE);
-                long id = question.save();
-                mSmsHandler.sendSmsQuestion(toSend,id);
-            } else if (mQuestionType.equals(Constants.SMS_TYPE.WIKI_TYPE)) {
-                Wiki wiki = new Wiki(toSend, Constants.SMS_TYPE.WIKI_TYPE);
-                long id = wiki.save();
-                mSmsHandler.sendSmsQuestion(toSend,id);
-            }
-            ((HomeActivity)mContext).onBackPressed();
+            SMSQuery SMSQuery = new SMSQuery(toSend, Constants.SMS_TYPE.QUESTION_TYPE);
+            long id = SMSQuery.save();
+            mSmsHandler.sendSmsQuestion(toSend, id, mQuestionType);
+            ((HomeActivity) mContext).onBackPressed();
         }
     }
 

@@ -2,7 +2,6 @@ package piedpiper1337.github.io.cortex.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.Editable;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import piedpiper1337.github.io.cortex.R;
-import piedpiper1337.github.io.cortex.models.Question;
 import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 import piedpiper1337.github.io.cortex.utils.SmsHandler;
 
@@ -53,15 +51,15 @@ public class QuestionFragment extends BaseFragment {
         mQuestionTextView.setText(mQuestion.getQuestion());
         if (mQuestion.getAnswer() == null || mQuestion.getAnswer().isEmpty()) {
             mAnswerTextView.setText(R.string.retry_sms);
-            mAnswerLinearLayout.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                    SmsHandler smsHandler = new SmsHandler(getActivity());
-                    smsHandler.sendSmsQuestion(mQuestion.getQuestion(),mQuestion.getId());
-                    return false;
-                }
-            });
+//            mAnswerLinearLayout.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    v.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+//                    SmsHandler smsHandler = new SmsHandler(getActivity());
+//                    smsHandler.sendSmsQuestion(mQuestion.getQuestion(),mQuestion.getId(), );
+//                    return false;
+//                }
+//            });
         }else{
             mAnswerTextView.setText(mQuestion.getAnswer());
         }

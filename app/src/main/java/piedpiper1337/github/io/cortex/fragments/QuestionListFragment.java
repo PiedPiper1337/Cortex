@@ -1,38 +1,50 @@
 package piedpiper1337.github.io.cortex.fragments;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.os.AsyncTask;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.activeandroid.query.Select;
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import piedpiper1337.github.io.cortex.R;
+import piedpiper1337.github.io.cortex.activities.HomeActivity;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
-import piedpiper1337.github.io.cortex.models.Question;
 import piedpiper1337.github.io.cortex.models.RawData;
-import piedpiper1337.github.io.cortex.models.Wiki;
+import piedpiper1337.github.io.cortex.models.SMSQuery;
 import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.utils.ItemTouchHelperAdapter;
 import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 import piedpiper1337.github.io.cortex.utils.SharedPreferenceUtil;
+import piedpiper1337.github.io.cortex.utils.SimpleItemTouchHelperCallback;
 
 /**
  * Created by brianzhao on 2/27/16.
@@ -43,16 +55,18 @@ public class QuestionListFragment extends BaseFragment {
     private NavigationCallback mNavigationCallback;
     private RecyclerView mRecyclerView;
     private RelativeLayout mBackgroundLayout;
+    private LinearLayout mForegroundLayout;
     private FloatingActionButton mNewQuestionButton;
     private List<SMSQueryable> mQuestionList;
+    private Toolbar mToolbar;
+    private Map<String, String> questionTypeToLetterMap;
+    private BroadcastReceiver mReceiver;
 
     private static final String QUESTION_TYPE = "io.github.piedpiper1337.cortex.QUESTION_TYPE";
 
 
-    public static QuestionListFragment newInstance(String questionType) {
-
+    public static QuestionListFragment newInstance() {
         Bundle args = new Bundle();
-        args.putString(QUESTION_TYPE, questionType);
         QuestionListFragment fragment = new QuestionListFragment();
         fragment.setArguments(args);
         return fragment;
@@ -68,92 +82,126 @@ public class QuestionListFragment extends BaseFragment {
         } else {
             throw new RuntimeException("activity doesn't implement navigation callback");
         }
+        questionTypeToLetterMap = new HashMap<>();
+        questionTypeToLetterMap.put(Constants.SMS_TYPE.QUESTION_TYPE, "Q");
+        questionTypeToLetterMap.put(Constants.SMS_TYPE.WIKI_TYPE, "W");
+        questionTypeToLetterMap.put(Constants.SMS_TYPE.URL_TYPE, "U");
+
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceiver,
+                new IntentFilter("custom-event-name"));
+
+
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Our handler for received Intents. This will be called whenever an Intent
+        // with an action named "custom-event-name" is broadcasted.
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                // Get extra data included in the Intent
+                String message = intent.getStringExtra("message");
+                Log.d("receiver", "Got message: " + message);
+                List<RawData> rawDataList = new Select().from(RawData.class).where("Finished = ?", true).execute();
+                for (RawData rawData : rawDataList) {
+                    long id = rawData.getRealId();
+                    SMSQuery smsquery = new Select().from(SMSQuery.class).where("Id = ?", id).executeSingle();
+                    smsquery.setAnswer(rawData.getAnswer());
+                    smsquery.updateDate();
+                    smsquery.save();
+
+                    rawData.delete();
+                }
+                updateUI();
+            }
+        };
+
+        LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceiver,
+                new IntentFilter("custom-event-name"));
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sms_list, container, false);
         mBackgroundLayout = (RelativeLayout) view.findViewById(R.id.question_list_background_relative_layout);
+        mForegroundLayout = (LinearLayout) view.findViewById(R.id.sms_list_foreground_layout);
+        mToolbar = (Toolbar) view.findViewById(R.id.fragment_sms_list_toolbar);
+        ((HomeActivity) mContext).setSupportActionBar(mToolbar);
+        ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.your_questions);
 
         mNewQuestionButton = (FloatingActionButton) view.findViewById(R.id.ask_sms_question_fab);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.question_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
+
         updateUI();
 
         mNewQuestionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mNavigationCallback.askQuestion(getArguments().getString(QUESTION_TYPE));
+                //TODO make this like google hangouts, where you choose the type of question
+//                https://github.com/Clans/FloatingActionButton
+                mNavigationCallback.askQuestion(Constants.SMS_TYPE.QUESTION_TYPE);
             }
         });
 
-        //asynchronously check for finished rawdata, then move them to appropriate table, + re-query
-        new AsyncTask<Void, Void, Long>() {
-
-            @Override
-            protected Long doInBackground(Void... params) {
-                List<RawData> rawDataList = new Select().from(RawData.class).where("Finished = ?", true).execute();
-                for (RawData rawData : rawDataList) {
-                    long id = rawData.getRealId();
-                    if (rawData.getType().equals(Constants.SMS_TYPE.QUESTION_TYPE)) {
-                        Question question = new Select().from(Question.class).where("Id = ?", id).executeSingle();
-                        question.setAnswer(rawData.getAnswer());
-                        question.updateDate();
-                        question.save();
-                    } else if (rawData.getType().equals(Constants.SMS_TYPE.WIKI_TYPE)) {
-                        Wiki wiki = new Select().from(Question.class).where("Id = ?", id).executeSingle();
-                        wiki.setAnswer(rawData.getAnswer());
-                        wiki.updateDate();
-                        wiki.save();
-                    } else {
-                        throw new UnsupportedOperationException();
-                    }
-                    rawData.delete();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Long result) {
-                updateUI();
-            }
-        }.execute();
+//        //asynchronously check for finished rawdata, then move them to appropriate table, + re-query
+//        new AsyncTask<Void, Void, Long>() {
+//
+//            @Override
+//            protected Long doInBackground(Void... params) {
+//                List<RawData> rawDataList = new Select().from(RawData.class).where("Finished = ?", true).execute();
+//                for (RawData rawData : rawDataList) {
+//                    long id = rawData.getRealId();
+//                    SMSQuery smsquery = new Select().from(SMSQuery.class).where("Id = ?", id).executeSingle();
+//                    smsquery.setAnswer(rawData.getAnswer());
+//                    smsquery.updateDate();
+//                    smsquery.save();
+//
+//                    rawData.delete();
+//                }
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Long result) {
+//                updateUI();
+//            }
+//        }.execute();
 
 
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Unregister since the activity is about to be closed.
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(mReceiver);
     }
 
     /**
      * regenerate list of questions by doing db call
      */
     private void updateUI() {
-        if (getArguments().get(QUESTION_TYPE).equals(Constants.SMS_TYPE.QUESTION_TYPE)) {
-            List<Question> questions = new Select().from(Question.class).orderBy("Date DESC").execute();
-            mQuestionList = new ArrayList<>();
-            for (Question q : questions) {
-                mQuestionList.add(q);
-            }
-        } else if (getArguments().get(QUESTION_TYPE).equals(Constants.SMS_TYPE.WIKI_TYPE)) {
-            List<Wiki> wikis= new Select().from(Wiki.class).orderBy("Date DESC").execute();
-            mQuestionList = new ArrayList<>();
-            for (Wiki w : wikis) {
-                mQuestionList.add(w);
-            }
+        List<SMSQuery> SMSQueries = new Select().from(SMSQuery.class).orderBy("Date DESC").execute();
+        mQuestionList = new ArrayList<>();
+        for (SMSQuery q : SMSQueries) {
+            mQuestionList.add(q);
         }
-
-//        mQuestionList = new Select().from(Question.class).execute();
 
         if (mQuestionList != null) {
             if (mQuestionList.size() == 0) {
                 swapToBackgroundView();
 
             } else {
-                QuestionAdapter questionAdapter = new QuestionAdapter(mQuestionList, this);
-//                ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(questionAdapter);
-//                ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
-//                touchHelper.attachToRecyclerView(mRecyclerView);
+                QuestionAdapter questionAdapter = new QuestionAdapter(mQuestionList);
+                ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(questionAdapter);
+                ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+                touchHelper.attachToRecyclerView(mRecyclerView);
                 mRecyclerView.setAdapter(questionAdapter);
 
                 int previousPosition = SharedPreferenceUtil.readPreference(mContext,
@@ -194,22 +242,39 @@ public class QuestionListFragment extends BaseFragment {
         return TAG;
     }
 
+    /**
+     * TODO add round button support
+     * https://github.com/amulyakhare/TextDrawable
+     */
     public class QuestionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mQuestionTextView;
         private TextView mAnswerTextView;
+        private ImageView mImageView;
         private SMSQueryable mQuestion;
+        private ColorGenerator mColorGenerator;
 
         public QuestionHolder(final View itemView) {
             super(itemView);
             mQuestionTextView = (TextView) itemView.findViewById(R.id.list_item_question_text_view);
             mAnswerTextView = (TextView) itemView.findViewById(R.id.list_item_answer_text_view);
+            mImageView = (ImageView) itemView.findViewById(R.id.list_item_question_image_view);
+            mColorGenerator = ColorGenerator.MATERIAL;
             itemView.setOnClickListener(this);
-
         }
 
         public void bindQuestion(SMSQueryable question) {
             mQuestion = question;
             mQuestionTextView.setText(question.getQuestion());
+
+            //TODO map questions to colors
+//            Random rnd = new Random();
+//            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+//            int color = mColorGenerator.getColor(question.getType());
+            int color = mColorGenerator.getRandomColor();
+            TextDrawable drawable = TextDrawable.builder()
+                    .buildRound(questionTypeToLetterMap.get(question.getType()), color);
+            mImageView.setImageDrawable(drawable);
+
             String answer = question.getAnswer();
             if (answer != null && !answer.isEmpty()) {
                 mAnswerTextView.setText(answer);
@@ -218,11 +283,8 @@ public class QuestionListFragment extends BaseFragment {
             }
         }
 
-
-        //TODO make new fragment
         @Override
         public void onClick(View view) {
-//            Toast.makeText(getActivity(), "NEED TO MAKE NEW FRAGMENT!", Toast.LENGTH_SHORT).show();
             SharedPreferenceUtil.savePreference(mContext,
                     Constants.SharedPreferenceKeys.RECYCLER_VIEW_POSITION,
                     this.getAdapterPosition());
@@ -235,11 +297,9 @@ public class QuestionListFragment extends BaseFragment {
             extends RecyclerView.Adapter<QuestionHolder>
             implements ItemTouchHelperAdapter {
         private List<SMSQueryable> mQuestions;
-        private QuestionListFragment mQuestionListFragment;
 
-        public QuestionAdapter(List<SMSQueryable> questions, QuestionListFragment questionListFragment) {
+        public QuestionAdapter(List<SMSQueryable> questions) {
             mQuestions = questions;
-            mQuestionListFragment = questionListFragment;
         }
 
         @Override
@@ -266,7 +326,7 @@ public class QuestionListFragment extends BaseFragment {
             notifyItemRemoved(position);
 
             final Snackbar snackbar = Snackbar
-                    .make(mRecyclerView, "Question Deleted", Snackbar.LENGTH_LONG);
+                    .make(mRecyclerView, "Question Deleted", Snackbar.LENGTH_SHORT);
 
             snackbar.setAction(R.string.undo, new View.OnClickListener() {
                 @Override
@@ -276,7 +336,6 @@ public class QuestionListFragment extends BaseFragment {
             })
                     .setActionTextColor(ContextCompat.getColor(mContext, R.color.lightOrange))
                     .setCallback(new Snackbar.Callback() {
-
                         @Override
                         public void onDismissed(Snackbar snackbar, int event) {
                             switch (event) {
@@ -284,16 +343,28 @@ public class QuestionListFragment extends BaseFragment {
                                 case DISMISS_EVENT_TIMEOUT:
                                     //actually delete
                                     toBeDeleted.delete();
+                                    if (mQuestions.size() == 0) {
+                                        swapToBackgroundView();
+                                    }
                                     break;
                                 case DISMISS_EVENT_MANUAL:
                                     //restore
                                     mQuestions.add(position, toBeDeleted);
+                                    if (mQuestions.size() == 1) {
+                                        swapToRecyclerView();
+                                    }
                                     notifyItemInserted(position);
                                     mRecyclerView.scrollToPosition(position);
-
                                     break;
                                 default:
                                     break;
+                            }
+                            if (!snackbar.isShown()) {
+                                //if the snackbar is not shown, make sure the fab is at the
+                                //original location
+
+//                                https://stackoverflow.com/questions/35074558/android-floating-action-button-not-returning-to-initial-position
+                                mNewQuestionButton.setTranslationY(0.0f);
                             }
                         }
                     });
