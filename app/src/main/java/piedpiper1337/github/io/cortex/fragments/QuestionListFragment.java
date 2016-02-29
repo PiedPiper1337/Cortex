@@ -95,7 +95,6 @@ public class QuestionListFragment extends BaseFragment {
      * regenerate list of questions by doing db call
      */
     private void updateUI() {
-        //TODO initialize the database list of questions
         if (getArguments().get(QUESTION_TYPE).equals(Constants.SMS_TYPE.QUESTION_TYPE)) {
             List<Question> questions = new Select().from(Question.class).orderBy("Date DESC").execute();
             mQuestionList = new ArrayList<>();

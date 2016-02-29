@@ -2,12 +2,14 @@ package piedpiper1337.github.io.cortex.models;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
 
 import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 
 /**
  * Created by brianzhao on 2/28/16.
  */
+@Table(name = "Wiki")
 public class Wiki extends Model implements SMSQueryable {
     @Column(name = "Question")
     private String mQuestion;
@@ -21,7 +23,7 @@ public class Wiki extends Model implements SMSQueryable {
     @Column(name = "Date")
     private long mDate;
 
-    public Wiki(){
+    public Wiki() {
         super();
     }
 

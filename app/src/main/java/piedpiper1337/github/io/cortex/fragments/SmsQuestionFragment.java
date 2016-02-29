@@ -49,6 +49,7 @@ public class SmsQuestionFragment extends BaseFragment {
     private LinearLayout mBottomLinearLayout;
     private Toolbar mToolbar;
     private static final int REQUEST_SMS_PERMISSION= 1;
+    private static final int REQUEST_SMS_RECEIVE_PERMISSION= 2;
     private static final String FRAGMENT_DIALOG = "dialog";
 
     private static final String QUESTION_TYPE = "io.github.piedpiper1337.cortex.QUESTION_TYPE";
@@ -91,6 +92,12 @@ public class SmsQuestionFragment extends BaseFragment {
             return;
         }
 
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.RECEIVE_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestSMSReceivePermission();
+            return;
+        }
+
     }
 
     @Override
@@ -110,10 +117,24 @@ public class SmsQuestionFragment extends BaseFragment {
         }
     }
 
+    private void requestSMSReceivePermission() {
+        if (FragmentCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECEIVE_SMS)) {
+            new ConfirmationDialogReceive().show(getChildFragmentManager(), FRAGMENT_DIALOG);
+        } else {
+            FragmentCompat.requestPermissions(this, new String[]{Manifest.permission.RECEIVE_SMS},
+                    REQUEST_SMS_RECEIVE_PERMISSION);
+        }
+    }
+
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode == REQUEST_SMS_PERMISSION) {
+            if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                ((HomeActivity) mContext).showErrorDialog(getString(R.string.request_permission));
+            }
+        } else if (requestCode == REQUEST_SMS_RECEIVE_PERMISSION) {
             if (grantResults.length != 1 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 ((HomeActivity) mContext).showErrorDialog(getString(R.string.request_permission));
             }
@@ -222,6 +243,39 @@ public class SmsQuestionFragment extends BaseFragment {
                             FragmentCompat.requestPermissions(parent,
                                     new String[]{Manifest.permission.SEND_SMS},
                                     REQUEST_SMS_PERMISSION);
+                        }
+                    })
+                    .setNegativeButton(android.R.string.cancel,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Activity activity = parent.getActivity();
+                                    if (activity != null) {
+                                        activity.finish();
+                                    }
+                                }
+                            })
+                    .create();
+        }
+    }
+
+
+    /**
+     * Shows OK/Cancel confirmation dialog about camera permission.
+     */
+    public static class ConfirmationDialogReceive extends DialogFragment {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Fragment parent = getParentFragment();
+            return new AlertDialog.Builder(getActivity())
+                    .setMessage(R.string.request_permission)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            FragmentCompat.requestPermissions(parent,
+                                    new String[]{Manifest.permission.RECEIVE_SMS},
+                                    REQUEST_SMS_RECEIVE_PERMISSION);
                         }
                     })
                     .setNegativeButton(android.R.string.cancel,
