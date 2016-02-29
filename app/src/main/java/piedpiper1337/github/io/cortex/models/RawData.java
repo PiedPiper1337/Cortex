@@ -14,6 +14,7 @@ import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 
 /**
  * represents data that should be processed
+ * https://www.future-processing.pl/blog/persist-your-data-activeandroid-and-parse/
  */
 @Table(name = "RawData")
 public class RawData extends Model {
@@ -34,12 +35,15 @@ public class RawData extends Model {
 
     //this is json
     @Column(name = "CurrentlyReceivedMessages")
-    private String mCurrentlyReceivedMessagesString;
-
     private HashMap<Integer, String> mCurrentlyReceivedMessagesMap;
 
     public RawData() {
         super();
+    }
+
+    public RawData(long id, String type) {
+        mId = id;
+        mType = type;
     }
 
     public void setAnswer(String answer) {
@@ -91,11 +95,37 @@ public class RawData extends Model {
         mCurrentlyReceivedMessagesMap = currentlyReceivedMessagesMap;
     }
 
-    public String getCurrentlyReceivedMessagesString() {
-        return mCurrentlyReceivedMessagesString;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        RawData rawData = (RawData) o;
+
+        if (mId != rawData.mId) return false;
+        return mType.equals(rawData.mType);
+
     }
 
-    public void setCurrentlyReceivedMessagesString(String currentlyReceivedMessagesString) {
-        mCurrentlyReceivedMessagesString = currentlyReceivedMessagesString;
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + mType.hashCode();
+        result = 31 * result + (int) (mId ^ (mId >>> 32));
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "RawData{" +
+                "mAnswer='" + mAnswer + '\'' +
+                ", mType='" + mType + '\'' +
+                ", mFinished=" + mFinished +
+                ", mId=" + mId +
+                ", mNumMessagesExpected=" + mNumMessagesExpected +
+                ", mCurrentlyReceivedMessagesMap=" + mCurrentlyReceivedMessagesMap +
+                '}';
     }
 }

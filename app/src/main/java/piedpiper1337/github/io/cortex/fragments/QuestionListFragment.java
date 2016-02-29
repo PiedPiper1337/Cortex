@@ -2,6 +2,7 @@ package piedpiper1337.github.io.cortex.fragments;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -9,7 +10,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,12 +27,12 @@ import java.util.List;
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
 import piedpiper1337.github.io.cortex.models.Question;
+import piedpiper1337.github.io.cortex.models.RawData;
 import piedpiper1337.github.io.cortex.models.Wiki;
 import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.utils.ItemTouchHelperAdapter;
 import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 import piedpiper1337.github.io.cortex.utils.SharedPreferenceUtil;
-import piedpiper1337.github.io.cortex.utils.SimpleItemTouchHelperCallback;
 
 /**
  * Created by brianzhao on 2/27/16.
@@ -88,6 +88,40 @@ public class QuestionListFragment extends BaseFragment {
                 mNavigationCallback.askQuestion(getArguments().getString(QUESTION_TYPE));
             }
         });
+
+        //asynchronously check for finished rawdata, then move them to appropriate table, + re-query
+        new AsyncTask<Void, Void, Long>() {
+
+            @Override
+            protected Long doInBackground(Void... params) {
+                List<RawData> rawDataList = new Select().from(RawData.class).where("Finished = ?", true).execute();
+                for (RawData rawData : rawDataList) {
+                    long id = rawData.getRealId();
+                    if (rawData.getType().equals(Constants.SMS_TYPE.QUESTION_TYPE)) {
+                        Question question = new Select().from(Question.class).where("Id = ?", id).executeSingle();
+                        question.setAnswer(rawData.getAnswer());
+                        question.updateDate();
+                        question.save();
+                    } else if (rawData.getType().equals(Constants.SMS_TYPE.WIKI_TYPE)) {
+                        Wiki wiki = new Select().from(Question.class).where("Id = ?", id).executeSingle();
+                        wiki.setAnswer(rawData.getAnswer());
+                        wiki.updateDate();
+                        wiki.save();
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
+                    rawData.delete();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Long result) {
+                updateUI();
+            }
+        }.execute();
+
+
         return view;
     }
 

@@ -22,7 +22,7 @@ public class SmsHandler {
      * @return
      */
     public String cleanMessage(String message) {
-        return message.replaceAll("\\W", "").toLowerCase();
+        return message.replaceAll("\\W", " ").toLowerCase();
     }
 
 

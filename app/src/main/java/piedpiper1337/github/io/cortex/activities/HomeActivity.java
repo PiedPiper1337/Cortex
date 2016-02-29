@@ -2,6 +2,9 @@ package piedpiper1337.github.io.cortex.activities;
 
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
+
+import com.activeandroid.query.Select;
 
 import java.util.List;
 
@@ -10,6 +13,7 @@ import piedpiper1337.github.io.cortex.fragments.HomeFragment;
 import piedpiper1337.github.io.cortex.fragments.QuestionPagerFragment;
 import piedpiper1337.github.io.cortex.fragments.SmsQuestionFragment;
 import piedpiper1337.github.io.cortex.models.Question;
+import piedpiper1337.github.io.cortex.models.RawData;
 import piedpiper1337.github.io.cortex.models.Wiki;
 import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 
@@ -21,6 +25,9 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
         initUI();
+
+        List<RawData> rawDatas = new Select().from(RawData.class).execute();
+        Log.d("WTF!!!", rawDatas.toString());
 
     }
 

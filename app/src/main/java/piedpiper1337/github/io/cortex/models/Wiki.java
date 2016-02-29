@@ -49,5 +49,9 @@ public class Wiki extends Model implements SMSQueryable {
     public void setAnswer(String answer) {
         mAnswer = answer;
     }
+
+    public void updateDate(){
+        mDate = System.currentTimeMillis();
+    }
 }
 

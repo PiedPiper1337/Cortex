@@ -2,27 +2,31 @@
 <manifest package="piedpiper1337.github.io.cortex"
           xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS"/>
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
 
     <application
+        android:name="com.activeandroid.app.Application"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:name="com.activeandroid.app.Application"
         android:theme="@style/AppTheme">
 
         <meta-data
             android:name="AA_MODELS"
-            android:value="piedpiper1337.github.io.cortex.models.Question,piedpiper1337.github.io.cortex.models.Wiki " />
+            android:value=
+                "piedpiper1337.github.io.cortex.models.Question,piedpiper1337.github.io.cortex.models.Wiki,piedpiper1337.github.io.cortex.models.RawData"/>
+
+        <meta-data android:name="AA_SERIALIZERS"
+                   android:value="piedpiper1337.github.io.cortex.utils.HashMapSerializer" />
 
         <activity
             android:name=".activities.HomeActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/MyMaterialTheme"
-            android:windowSoftInputMode="adjustResize"
-            android:screenOrientation="portrait">
+            android:windowSoftInputMode="adjustResize">
             >
 
             <!--android:theme="@style/AppTheme.NoActionBar"-->

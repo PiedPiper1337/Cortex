@@ -61,4 +61,7 @@ public class Question extends Model implements Serializable, SMSQueryable {
         mAnswer = answer;
     }
 
+    public void updateDate() {
+        mDate = System.currentTimeMillis();
+    }
 }
