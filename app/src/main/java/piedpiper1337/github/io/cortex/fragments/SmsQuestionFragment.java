@@ -215,7 +215,7 @@ public class SmsQuestionFragment extends BaseFragment {
 
     public void sendSms(String toSend) {
         if (mSmsHandler.canBeSent(toSend)) {
-            SMSQuery SMSQuery = new SMSQuery(toSend, Constants.SMS_TYPE.QUESTION_TYPE);
+            SMSQuery SMSQuery = new SMSQuery(toSend, mQuestionType);
             long id = SMSQuery.save();
             mSmsHandler.sendSmsQuestion(toSend, id, mQuestionType);
             ((HomeActivity) mContext).onBackPressed();

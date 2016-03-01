@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -367,6 +368,7 @@ public class QuestionListFragment extends BaseFragment {
             })
                     .setActionTextColor(ContextCompat.getColor(mContext, R.color.lightOrange))
                     .setCallback(new Snackbar.Callback() {
+                        private float mHeight;
                         @Override
                         public void onDismissed(Snackbar snackbar, int event) {
                             switch (event) {
@@ -393,14 +395,26 @@ public class QuestionListFragment extends BaseFragment {
                             if (!snackbar.isShown()) {
                                 //if the snackbar is not shown, make sure the fab is at the
                                 //original location
+//                                https://stackoverflow.com/questions/4213393/translate-animation
 
 //                                https://stackoverflow.com/questions/35074558/android-floating-action-button-not-returning-to-initial-position
-                                mFloatingActionsMenu.setTranslationY(0.0f);
+
+                                mFloatingActionsMenu.clearAnimation();
                             }
                         }
-                    });
 
+                        @Override
+                        public void onShown(Snackbar snackbar) {
+                            mHeight = snackbar.getView().getHeight();
+                            Animation animation = new TranslateAnimation(0, 0,0, -mHeight * 0.8f);
+                            animation.setDuration(50);
+                            animation.setFillAfter(true);
+                            mFloatingActionsMenu.startAnimation(animation);
+//                            mFloatingActionsMenu.setTranslationY(-snackbar.getView().getHeight() * 0.8f);
+                        }
+                    });
             snackbar.show();
+
         }
 
         @Override
