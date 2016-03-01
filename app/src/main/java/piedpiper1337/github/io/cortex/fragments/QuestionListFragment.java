@@ -28,6 +28,7 @@ import android.widget.TextView;
 import com.activeandroid.query.Select;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -59,6 +60,8 @@ public class QuestionListFragment extends BaseFragment {
     private RelativeLayout mBackgroundLayout;
     private LinearLayout mForegroundLayout;
     private FloatingActionsMenu mFloatingActionsMenu;
+    private FloatingActionButton mFloatingQuestionButton;
+    private FloatingActionButton mFloatingWikiButton;
     private List<SMSQueryable> mQuestionList;
     private Toolbar mToolbar;
     private Map<String, String> questionTypeToLetterMap;
@@ -134,12 +137,29 @@ public class QuestionListFragment extends BaseFragment {
         ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.app_name);
 
         mFloatingActionsMenu = (FloatingActionsMenu) view.findViewById(R.id.send_actions);
+        mFloatingQuestionButton = (FloatingActionButton) view.findViewById(R.id.fab_ask_question);
+        mFloatingWikiButton = (FloatingActionButton) view.findViewById(R.id.fab_wiki_lookup);
+
+        mFloatingQuestionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mNavigationCallback.askQuestion(Constants.SMS_TYPE.QUESTION_TYPE);
+                mFloatingActionsMenu.toggle();
+            }
+        });
+
+        mFloatingWikiButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mNavigationCallback.askQuestion(Constants.SMS_TYPE.WIKI_TYPE);
+                mFloatingActionsMenu.toggle();
+            }
+        });
+
+
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.question_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-
-
 
 
         updateUI();
@@ -153,7 +173,7 @@ public class QuestionListFragment extends BaseFragment {
 //            }
 //        });
 
-        //        //TODO add items to the drawer
+        //TODO add items to the drawer
         Drawer drawer = new DrawerBuilder()
                 .withActivity((Activity) mContext)
                 .withToolbar(mToolbar)

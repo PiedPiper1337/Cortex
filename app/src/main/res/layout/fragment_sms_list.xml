@@ -93,7 +93,7 @@
 
 
             <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/action_b"
+                android:id="@+id/fab_wiki_lookup"
                 android:paddingBottom="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -101,10 +101,11 @@
                 android:scaleType="centerInside"
                 fab:fab_colorNormal="@color/fabColor"
                 fab:fab_colorPressed="@color/fabColorPressed"
-                fab:fab_title="Wikipedia Lookup!"/>
+                fab:fab_title="Wikipedia Lookup!"
+                />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/action_a"
+                android:id="@+id/fab_ask_question"
                 android:paddingBottom="15dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
