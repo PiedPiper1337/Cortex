@@ -19,8 +19,8 @@ import piedpiper1337.github.io.cortex.utils.SMSQueryable;
  * generated
  */
 
-@Table(name = "Question")
-public class Question extends Model implements Serializable, SMSQueryable {
+@Table(name = "SMSQuery")
+public class SMSQuery extends Model implements Serializable, SMSQueryable {
     @Column(name = "Question")
     private String mQuestion;
 
@@ -34,11 +34,11 @@ public class Question extends Model implements Serializable, SMSQueryable {
     private long mDate;
 
 
-    public Question() {
+    public SMSQuery() {
         super();
     }
 
-    public Question(String question, String type) {
+    public SMSQuery(String question, String type) {
         super();
         mQuestion = question;
         mType = type;
@@ -61,4 +61,7 @@ public class Question extends Model implements Serializable, SMSQueryable {
         mAnswer = answer;
     }
 
+    public void updateDate() {
+        mDate = System.currentTimeMillis();
+    }
 }

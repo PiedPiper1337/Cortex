@@ -17,11 +17,14 @@ import java.util.List;
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.HomeActivity;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
-import piedpiper1337.github.io.cortex.models.Question;
 import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 
 /**
  * Created by brianzhao on 2/28/16.
+ */
+
+/**
+ * previews all of your questions in a swipeable viewpager
  */
 public class QuestionPagerFragment extends BaseFragment {
     private static final String TAG = QuestionPagerFragment.class.getSimpleName();

@@ -1,51 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
     >
-    <RelativeLayout
+
+
+    <LinearLayout
+        android:id="@+id/sms_list_foreground_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/question_list_background_relative_layout"
-        android:padding="20dp"
-        android:visibility="gone"
-        >
+        android:orientation="vertical">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            >
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/fragment_sms_list_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="#2b82c4"
+                android:title="@string/your_questions"
+                />
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/question_recycler_view"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fadeScrollbars="true"
+            android:orientation="vertical"
+            android:scrollbars="vertical"
+            >
+
+        </android.support.v7.widget.RecyclerView>
+
+        <RelativeLayout
+            android:id="@+id/question_list_background_relative_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp"
+            android:visibility="gone"
+            >
 
 
-        <TextView
-            android:layout_centerInParent="true"
+            <TextView
+                android:paddingBottom="40dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/zero_questions_background"
+                android:textAlignment="center"
+                android:textSize="20sp"
+                />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+    <!--<android.support.design.widget.FloatingActionButton-->
+        <!--android:id="@+id/ask_sms_question_fab"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="bottom|right|end"-->
+        <!--android:layout_margin="@dimen/fab_margin"-->
+        <!--android:src="@android:drawable/ic_input_add"-->
+        <!--android:tint="#FFFFFF"-->
+        <!--app:backgroundTint="#2b82c4"-->
+        <!--/>-->
+
+
+
+
+        <com.getbase.floatingactionbutton.FloatingActionsMenu
+            android:layout_margin="16dp"
+            android:id="@+id/send_actions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/zero_questions_background"
-            android:textSize="20sp"
-            android:textAlignment="center"
-            />
-
-    </RelativeLayout>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/question_recycler_view"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:scrollbars="vertical"
-        android:fadeScrollbars="true">
+            android:layout_gravity="bottom|right"
+            fab:fab_addButtonColorNormal="@color/fabColor"
+            fab:fab_addButtonColorPressed="@color/fabColorPressed"
+            fab:fab_addButtonPlusIconColor="@color/white"
+            fab:fab_labelStyle="@style/menu_labels_style"
+            fab:fab_labelsPosition="left"
+            >
+            <!--fab:fab_labelStyle="@style/menu_labels_style"-->
 
 
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_wiki_lookup"
+                android:paddingBottom="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/book"
+                android:scaleType="centerInside"
 
-    </android.support.v7.widget.RecyclerView>
+                fab:fab_colorNormal="@color/fabColor"
+                fab:fab_colorPressed="@color/fabColorPressed"
+                fab:fab_title="Wikipedia Lookup!"
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/ask_sms_question_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_input_add"
-        android:tint="#FFFFFF"
-        app:backgroundTint="#2b82c4"
-        />
-</FrameLayout>
+                />
+
+            <com.getbase.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fab_ask_question"
+                android:paddingBottom="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/question"
+                android:scaleType="centerInside"
+                fab:fab_colorNormal="@color/fabColor"
+                fab:fab_colorPressed="@color/fabColorPressed"
+                fab:fab_title="Ask a question!"/>
+
+        </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
+
+
+
+</android.support.design.widget.CoordinatorLayout>

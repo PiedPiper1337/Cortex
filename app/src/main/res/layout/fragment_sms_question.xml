@@ -131,7 +131,7 @@
         android:foregroundGravity="bottom|right"
         android:src="@android:drawable/ic_menu_send"
         android:tint="@color/windowBackground"
-        app:backgroundTint="#2b82c4"
+        app:backgroundTint="@color/fabColor"
         />
 
 </FrameLayout>

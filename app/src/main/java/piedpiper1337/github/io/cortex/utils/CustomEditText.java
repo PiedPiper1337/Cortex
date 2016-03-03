@@ -52,7 +52,6 @@ public class CustomEditText extends EditText{
             InputMethodManager mgr = (InputMethodManager)
                     context.getSystemService(Context.INPUT_METHOD_SERVICE);
             mgr.hideSoftInputFromWindow(this.getWindowToken(), 0);
-            // TODO: Hide your view as you do it in your activity
         }
         return false;
     }

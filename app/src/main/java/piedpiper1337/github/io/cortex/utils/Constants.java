@@ -10,6 +10,7 @@ public class Constants {
     public interface SMS_TYPE{
         String QUESTION_TYPE = "QUES";
         String WIKI_TYPE = "WIKI";
+        String URL_TYPE = "URL";
     }
 
 
