@@ -95,8 +95,6 @@ public class QuestionListFragment extends BaseFragment {
 
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceiver,
                 new IntentFilter("custom-event-name"));
-
-
     }
 
     @Override
@@ -141,6 +139,7 @@ public class QuestionListFragment extends BaseFragment {
         mFloatingQuestionButton = (FloatingActionButton) view.findViewById(R.id.fab_ask_question);
         mFloatingWikiButton = (FloatingActionButton) view.findViewById(R.id.fab_wiki_lookup);
 
+
         mFloatingQuestionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,6 +155,8 @@ public class QuestionListFragment extends BaseFragment {
                 mFloatingActionsMenu.toggle();
             }
         });
+
+
 
 
 

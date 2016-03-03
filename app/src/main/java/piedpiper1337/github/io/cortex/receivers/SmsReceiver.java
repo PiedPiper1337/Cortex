@@ -29,6 +29,13 @@ public class SmsReceiver extends BroadcastReceiver {
 
     private static final String TAG = SmsReceiver.class.getName();
 
+    /**
+     * checks if the sms was from cortex, if it does it gets the message body,
+     * puts it into list of string
+     * forwards to background intenservice
+     * @param context
+     * @param intent
+     */
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -64,7 +71,7 @@ public class SmsReceiver extends BroadcastReceiver {
                      * expecting this protocol format:
                      * QuestionType (QUES or WIKI):Primary Key (hex encoded long):currentnumber/totalnumber
                      */
-                    String messageBody = msgs[i].getMessageBody().toString();
+                    String messageBody = msgs[i].getMessageBody();
                     String[] messageBodyParsed = messageBody.split(":");
 
                     String questionType = messageBodyParsed[0];
@@ -97,7 +104,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 }
 
                 // Fetch the text message
-                str += msgs[i].getMessageBody().toString();
+                str += msgs[i].getMessageBody();
                 // Newline <img src="http://codetheory.in/wp-includes/images/smilies/simple-smile.png" alt=":-)" class="wp-smiley" style="height: 1em; max-height: 1em;">
                 str += "\n";
             }

@@ -2,9 +2,9 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:fab="http://schemas.android.com/tools"
     android:id="@+id/coordinatorLayout"
     >
 
@@ -88,8 +88,10 @@
             android:layout_gravity="bottom|right"
             fab:fab_addButtonColorNormal="@color/fabColor"
             fab:fab_addButtonColorPressed="@color/fabColorPressed"
-
-            fab:fab_addButtonPlusIconColor="@color/white">
+            fab:fab_addButtonPlusIconColor="@color/white"
+            fab:fab_labelStyle="@style/menu_labels_style"
+            fab:fab_labelsPosition="left"
+            >
             <!--fab:fab_labelStyle="@style/menu_labels_style"-->
 
 
@@ -100,9 +102,11 @@
                 android:layout_height="wrap_content"
                 android:src="@drawable/book"
                 android:scaleType="centerInside"
+
                 fab:fab_colorNormal="@color/fabColor"
                 fab:fab_colorPressed="@color/fabColorPressed"
                 fab:fab_title="Wikipedia Lookup!"
+
                 />
 
             <com.getbase.floatingactionbutton.FloatingActionButton
