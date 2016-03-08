@@ -22,6 +22,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
@@ -99,7 +100,12 @@ public class SmsQuestionFragment extends BaseFragment {
             requestSMSReceivePermission();
             return;
         }
+    }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        ((HomeActivity) mContext).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
     @Override

@@ -18,4 +18,10 @@ public class Constants {
         String RECYCLER_VIEW_POSITION = "io.github.piedpiper1337.cortex.RECYCLER_VIEW_POSITION";
     }
 
+
+    public interface IntentKeys{
+        String CORTEX_MESSAGES_RECEIVED = "io.github.piedpiper1337.cortex.CORTEX_MESSAGES_RECEIVED";
+        String CORTEX_MESSAGES_DB_UPDATED = "io.github.piedpiper1337.cortex.CORTEX_MESSAGES_DB_UPDATED";
+    }
+
 }

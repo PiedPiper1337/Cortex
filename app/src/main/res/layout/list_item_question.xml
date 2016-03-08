@@ -1,46 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:background="@drawable/bottom_border"
-              android:orientation="horizontal"
-              android:padding="16dp">
-
-    <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginRight="15dp"
-        android:layout_gravity="center_vertical"
-        android:id="@+id/list_item_question_image_view"
-        />
+              android:background="@color/white"
+              android:orientation="vertical"
+              >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        >
 
-        <TextView
-            android:id="@+id/list_item_question_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:textColor="@color/black"
-            android:textSize="17sp"
-            tools:text="When was George Washington born?"
+        <ImageView
+            android:id="@+id/list_item_question_image_view"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="15dp"
             />
 
-
-        <TextView
-            android:id="@+id/list_item_answer_text_view"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:textSize="12sp"
-            tools:text="When was George Washington born?"
-            />
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/list_item_question_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                tools:text="When was George Washington born?"
+                />
+
+
+            <TextView
+                android:id="@+id/list_item_answer_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:textSize="12sp"
+                tools:text="When was George Washington born?"
+                />
+
+        </LinearLayout>
 
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/transparentGray"/>
 
 </LinearLayout>
 

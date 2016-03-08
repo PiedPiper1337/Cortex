@@ -66,6 +66,7 @@ public class SmsHandler {
         }
         //TODO append header information here
         SmsManager smsManager = SmsManager.getDefault();
+        toSend = questionType + ":" + Long.toHexString(questionDatabaseID) + ":" + toSend;
         smsManager.sendTextMessage(Constants.CORTEX_NUMBER, null, toSend, null, null);
         Toast.makeText(mContext, "Question sent!", Toast.LENGTH_SHORT).show();
     }

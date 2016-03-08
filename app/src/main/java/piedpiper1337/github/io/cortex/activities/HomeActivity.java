@@ -43,8 +43,8 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
                 .beginTransaction()
 //                .setCustomAnimations(R.animator.slide_in_right, R.animator.slide_out_left,
 //                        R.animator.slide_in_left, R.animator.slide_out_right)
-                .setCustomAnimations(R.animator.fade_in_fast, R.animator.fade_out_fast,
-                        R.animator.fade_in_fast, R.animator.fade_out_fast)
+                .setCustomAnimations(R.animator.fade_in_fast, R.animator.fade_out_fast)
+//                        R.animator.fade_in, R.animator.fade_out)
                 .replace(R.id.fragment_container, smsQuestionFragment, "smsQuestionFragment")
                 .addToBackStack(null)
                 .commit();
@@ -57,8 +57,8 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
 
         getFragmentManager()
                 .beginTransaction()
-                .setCustomAnimations(R.animator.fade_in_fast, R.animator.fade_out_fast,
-                        R.animator.fade_in_fast, R.animator.fade_out_fast)
+                .setCustomAnimations(R.animator.fade_in_fast, R.animator.fade_out_fast)
+//                        R.animator.fade_in_fast, R.animator.fade_out_fast)
                 .replace(R.id.fragment_container, questionPagerFragment , "questionPagerFragment")
                 .addToBackStack(null)
                 .commit();
