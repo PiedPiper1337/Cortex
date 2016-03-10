@@ -12,6 +12,8 @@ import com.activeandroid.query.Select;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import piedpiper1337.github.io.cortex.models.RawData;
 import piedpiper1337.github.io.cortex.models.SMSQuery;
@@ -31,6 +33,7 @@ public class SmsParserService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG, "Starting to parse messages");
         List<String> cortexMessages = intent.getExtras().getStringArrayList(Constants.IntentKeys.CORTEX_MESSAGES_RECEIVED);
+        Log.d("WTF", cortexMessages.toString());
 
         //have to load the current rawdatas to memory
         List<RawData> rawDataList = new Select().from(RawData.class).where("Finished = ?", false).execute();
@@ -41,17 +44,26 @@ public class SmsParserService extends IntentService {
         }
 
         for (String messageBody : cortexMessages) {
+            Pattern p = Pattern.compile("C[a-fA-F0-9]+:[ 0-9]+/[ 0-9]+:.*");
+            Matcher m = p.matcher(messageBody);
+            int index = -1;
+            if (m.find()) {
+                index = m.start();
+            } else {
+                continue;
+            }
+            messageBody = messageBody.substring(index+1);
             String[] messageBodyParsed = messageBody.split(":");
 
-            String questionType = messageBodyParsed[0];
-            long id = Long.parseLong(messageBodyParsed[1], 16);
+//            String questionType = messageBodyParsed[0];
+            long id = Long.parseLong(messageBodyParsed[0], 16);
 
-            String[] ratio = messageBodyParsed[2].split("/");
+            String[] ratio = messageBodyParsed[1].split("/");
             int currentMessageNumber = Integer.parseInt(ratio[0].trim());
             int totalMessageNumber = Integer.parseInt(ratio[1].trim());
 
             StringBuilder stringBuilder = new StringBuilder();
-            for (int j = 3; j < messageBodyParsed.length; j++) {
+            for (int j = 2; j < messageBodyParsed.length; j++) {
                 stringBuilder.append(messageBodyParsed[j]).append(' ');
             }
             String actualMessage = stringBuilder.toString();
@@ -62,12 +74,10 @@ public class SmsParserService extends IntentService {
                 HashMap<String, String> messageMap = actualRawData.getCurrentlyReceivedMessagesMap();
 
                 Log.d("WTF", "EXISTING HASHMAP: \n" + messageMap.toString());
-
                 messageMap.put(String.valueOf(currentMessageNumber), actualMessage);
 
                 Log.d("WTF", "EXISTING HASHMAP After putting stuff in it\n" + messageMap.toString());
             } else { //otherwise its a new message
-                rawData.setType(questionType);
                 rawData.setNumMessagesExpected(totalMessageNumber);
                 HashMap<String, String> messages = new HashMap<>();
                 messages.put(String.valueOf(currentMessageNumber), actualMessage);
@@ -89,6 +99,8 @@ public class SmsParserService extends IntentService {
                     finalMessage.append(rawDataToUpdate.getCurrentlyReceivedMessagesMap().get(String.valueOf(i)));
                 }
                 rawDataToUpdate.setAnswer(finalMessage.toString().trim());
+                Log.d("WTF-PARSER", rawDataToUpdate.getAnswer());
+
                 numCompleted++;
             }
             rawDataToUpdate.save();
@@ -107,21 +119,17 @@ public class SmsParserService extends IntentService {
             smsquery.setAnswer(rawData.getAnswer());
             smsquery.updateDate();
             smsquery.save();
-
             rawData.delete();
         }
-
-        AudioManager aManager=(AudioManager)(this.getSystemService(Context.AUDIO_SERVICE));
-        aManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
 
         if (numCompleted > 0) {
             Intent myintent = new Intent(Constants.IntentKeys.CORTEX_MESSAGES_DB_UPDATED);
             // You can also include some extra data.
-            intent.putExtra("message", "This is my message!");
+//            intent.putExtra("message", "This is my message!");
             LocalBroadcastManager.getInstance(this).sendBroadcast(myintent);
-            Log.d(TAG, "SMS WTF!");
+//            AudioManager aManager=(AudioManager)(this.getSystemService(Context.AUDIO_SERVICE));
+//            aManager.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
         }
-
     }
 
 

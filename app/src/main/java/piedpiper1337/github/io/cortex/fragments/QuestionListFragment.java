@@ -99,8 +99,6 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         questionTypeToLetterMap.put(Constants.SMS_TYPE.QUESTION_TYPE, "Q");
         questionTypeToLetterMap.put(Constants.SMS_TYPE.WIKI_TYPE, "W");
         questionTypeToLetterMap.put(Constants.SMS_TYPE.URL_TYPE, "U");
-
-
     }
 
     @Override
@@ -112,8 +110,8 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
             @Override
             public void onReceive(Context context, Intent intent) {
                 // Get extra data included in the Intent
-                String message = intent.getStringExtra("message");
-                Log.d("receiver", "Got message: " + message);
+//                String message = intent.getStringExtra("message");
+//                Log.d("receiver", "Got message: " + message);
                 updateUI();
             }
         };
@@ -122,13 +120,13 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
                 new IntentFilter(Constants.IntentKeys.CORTEX_MESSAGES_DB_UPDATED));
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_base, menu);
-        final MenuItem item = menu.findItem(R.id.search);
-//        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
-//        searchView.setOnQueryTextListener(this);
-    }
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        inflater.inflate(R.menu.menu_base, menu);
+//        final MenuItem item = menu.findItem(R.id.search);
+////        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+////        searchView.setOnQueryTextListener(this);
+//    }
 
 
     //TODO for search
@@ -218,7 +216,10 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
                 if (previousPosition != -1) {
                     mRecyclerView.scrollToPosition(previousPosition);
                 }
-                SharedPreferenceUtil.clearPreferences(mContext);
+                SharedPreferenceUtil.savePreference(mContext,
+                        Constants.SharedPreferenceKeys.RECYCLER_VIEW_POSITION,
+                        -1
+                );
                 swapToRecyclerView();
             }
         } else {
@@ -262,7 +263,6 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
     }
 
     /**
-     *
      * https://github.com/amulyakhare/TextDrawable
      */
     public class QuestionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -289,7 +289,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
 //            Random rnd = new Random();
 //            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 //            int color = mColorGenerator.getRandomColor();
-            int color = mColorGenerator.getColor(question.getType().hashCode()*7);
+            int color = mColorGenerator.getColor(question.getType().hashCode() * 7);
 
             TextDrawable drawable = TextDrawable.builder()
                     .buildRound(questionTypeToLetterMap.get(question.getType()), color);
@@ -363,6 +363,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
                     .setActionTextColor(ContextCompat.getColor(mContext, R.color.lightOrange))
                     .setCallback(new Snackbar.Callback() {
                         private float mHeight;
+
                         @Override
                         public void onDismissed(Snackbar snackbar, int event) {
                             switch (event) {
@@ -400,7 +401,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
                         @Override
                         public void onShown(Snackbar snackbar) {
                             mHeight = snackbar.getView().getHeight();
-                            Animation animation = new TranslateAnimation(0, 0,0, -mHeight * 0.8f);
+                            Animation animation = new TranslateAnimation(0, 0, 0, -mHeight * 0.8f);
                             animation.setDuration(50);
                             animation.setFillAfter(true);
                             mFloatingActionsMenu.startAnimation(animation);

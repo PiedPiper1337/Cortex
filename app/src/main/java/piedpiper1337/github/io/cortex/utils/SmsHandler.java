@@ -52,21 +52,22 @@ public class SmsHandler {
     }
 
 
-    /**TODO MAKE THIS ATTACH DIFFERENT HEADERS BASED ON QUESTION TYPE
+    /**
+     * TODO MAKE THIS ATTACH DIFFERENT HEADERS BASED ON QUESTION TYPE
      * sends an sms question
      * will check if message is valid, and if not, won't send
      *
      * @param toSend             the original string to send
      * @param questionDatabaseID id from activeandroid sqlite db
      */
-    public void sendSmsQuestion(String toSend, long questionDatabaseID, String questionType) {
+    public void sendSmsQuestion(String toSend, long questionDatabaseID, String questionType, String carrierCode) {
         toSend = cleanMessage(toSend);
         if (!messageIsProperLength(toSend)) {
             return;
         }
         //TODO append header information here
         SmsManager smsManager = SmsManager.getDefault();
-        toSend = questionType + ":" + Long.toHexString(questionDatabaseID) + ":" + toSend;
+        toSend = carrierCode + ":" + questionType + ":" + Long.toHexString(questionDatabaseID) + ":" + toSend;
         smsManager.sendTextMessage(Constants.CORTEX_NUMBER, null, toSend, null, null);
         Toast.makeText(mContext, "Question sent!", Toast.LENGTH_SHORT).show();
     }

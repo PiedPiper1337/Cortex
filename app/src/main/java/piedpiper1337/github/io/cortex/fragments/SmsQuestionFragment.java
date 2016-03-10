@@ -18,6 +18,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,12 +28,18 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.HomeActivity;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
 import piedpiper1337.github.io.cortex.models.SMSQuery;
 import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.utils.CustomEditText;
+import piedpiper1337.github.io.cortex.utils.SharedPreferenceUtil;
 import piedpiper1337.github.io.cortex.utils.SmsHandler;
 
 /**
@@ -58,6 +66,8 @@ public class SmsQuestionFragment extends BaseFragment {
     private static final String QUESTION_TYPE = "io.github.piedpiper1337.cortex.QUESTION_TYPE";
     private String mQuestionType;
 
+    private Map<String, String> carrierToCode;
+
 
     public static SmsQuestionFragment newInstance(String questionType) {
         Bundle args = new Bundle();
@@ -67,6 +77,17 @@ public class SmsQuestionFragment extends BaseFragment {
         return smsQuestionFragment;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (carrierToCode == null) {
+            carrierToCode = new HashMap<>();
+            carrierToCode.put("AT&T", "ATT");
+            carrierToCode.put("SPRINT", "SPR");
+            carrierToCode.put("VERIZON", "VER");
+            carrierToCode.put("TMOBILE", "TMO");
+        }
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -79,7 +100,6 @@ public class SmsQuestionFragment extends BaseFragment {
         }
         mSmsHandler = new SmsHandler(mContext);
         mQuestionType = getArguments().getString(QUESTION_TYPE);
-
     }
 
     @Override
@@ -219,13 +239,97 @@ public class SmsQuestionFragment extends BaseFragment {
         startActivity(it);
     }
 
-    public void sendSms(String toSend) {
+    public void sendSms(final String toSend) {
         if (mSmsHandler.canBeSent(toSend)) {
-            SMSQuery SMSQuery = new SMSQuery(toSend, mQuestionType);
-            long id = SMSQuery.save();
-            mSmsHandler.sendSmsQuestion(toSend, id, mQuestionType);
-            ((HomeActivity) mContext).onBackPressed();
+            TelephonyManager manager = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
+
+
+            final String carrierName = manager.getNetworkOperatorName();
+            String simOperatorName = manager.getSimOperatorName();
+
+            final List<String> carrierOptions = new ArrayList<>(carrierToCode.keySet());
+            String[] carrierOptionsArray = carrierOptions.toArray(new String[carrierOptions.size()]);
+
+//            String possibleCarrier = null;
+//            if (carrierName != null && !carrierName.isEmpty()) {
+//                possibleCarrier = carrierName;
+//            } else if (simOperatorName != null && !simOperatorName.isEmpty()) {
+//                possibleCarrier = simOperatorName;
+//            }
+
+            String userSavedCarrier = SharedPreferenceUtil.readPreference(mContext,
+                    Constants.SharedPreferenceKeys.CARRIER_NAME, null);
+
+            final StringBuilder toSave = new StringBuilder();
+            int defaultUserSelection = -1;
+//            if (possibleCarrier != null) {
+//                defaultUserSelection = carrierOptions.indexOf(possibleCarrier);
+//            }
+
+
+
+            if (userSavedCarrier == null) {
+                // Creating and Building the Dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                if (defaultUserSelection == -1) {
+                    builder.setTitle("Please choose your carrier so your answer gets back to you.");
+                } else {
+                    builder.setTitle("Please confirm your carrier so your answer gets back to you.");
+                }
+
+
+                builder.setSingleChoiceItems(carrierOptionsArray, defaultUserSelection,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int item) {
+                                switch (item) {
+                                    case 0:
+                                        toSave.setLength(0);
+                                        toSave.append(carrierOptions.get(0));
+                                        break;
+                                    case 1:
+                                        toSave.setLength(0);
+                                        toSave.append(carrierOptions.get(1));
+                                        break;
+                                    case 2:
+                                        toSave.setLength(0);
+                                        toSave.append(carrierOptions.get(2));
+                                        break;
+                                    case 3:
+                                        toSave.setLength(0);
+                                        toSave.append(carrierOptions.get(3));
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        });
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String carrier = toSave.toString();
+                        if (carrier.length() > 0) {
+                            dialog.dismiss();
+                            SharedPreferenceUtil.savePreference(
+                                    mContext,
+                                    Constants.SharedPreferenceKeys.CARRIER_NAME,
+                                    carrier);
+                            sendSaveSMSAndReturn(toSend, carrierToCode.get(carrier));
+                        }
+                    }
+                });
+                AlertDialog carrierDialog = builder.create();
+                carrierDialog.show();
+            } else {
+                sendSaveSMSAndReturn(toSend, carrierToCode.get(userSavedCarrier));
+            }
         }
+    }
+
+    private void sendSaveSMSAndReturn(String toSend, String carrier){
+        SMSQuery smsQuery = new SMSQuery(toSend, mQuestionType);
+        long id = smsQuery.save();
+        mSmsHandler.sendSmsQuestion(toSend, id, mQuestionType,carrier);
+        ((HomeActivity) mContext).onBackPressed();
     }
 
     /**

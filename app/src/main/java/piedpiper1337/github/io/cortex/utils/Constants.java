@@ -4,7 +4,7 @@ package piedpiper1337.github.io.cortex.utils;
  * Created by brianzhao on 2/3/16.
  */
 public class Constants {
-    public static final String CORTEX_NUMBER = "9096324510";
+    public static final String CORTEX_NUMBER = "9093260367";
     public static final int MESSAGE_CHARACTER_LIMIT = 100;
 
     public interface SMS_TYPE{
@@ -16,6 +16,7 @@ public class Constants {
 
     public interface SharedPreferenceKeys{
         String RECYCLER_VIEW_POSITION = "io.github.piedpiper1337.cortex.RECYCLER_VIEW_POSITION";
+        String CARRIER_NAME = "io.github.piedpiper1337.cortex.CARRIER_NAME";
     }
 
 

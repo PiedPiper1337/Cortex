@@ -43,7 +43,6 @@ public class SmsReceiver extends BroadcastReceiver {
         SmsMessage[] msgs = null;
 
 
-
         ArrayList<String> cortexMessages = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -58,25 +57,31 @@ public class SmsReceiver extends BroadcastReceiver {
                 msgs[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
                 // Sender's phone number
                 stringBuilder.append("SMS from " + msgs[i].getOriginatingAddress() + " : ");
-                if (msgs[i].getOriginatingAddress().endsWith(Constants.CORTEX_NUMBER)) {
-                    AudioManager aManager=(AudioManager)(context.getSystemService(Context.AUDIO_SERVICE));
-                    aManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-                    /**
-                     * expecting this protocol format:
-                     * QuestionType (QUES or WIKI):Primary Key (hex encoded long):currentnumber/totalnumber
-                     */
-                    String messageBody = msgs[i].getMessageBody();
-                    cortexMessages.add(messageBody);
-                    stringBuilder.append(messageBody).append('\n');
 
+                /**
+                 * expecting this protocol format:
+                 * QuestionType (QUES or WIKI):Primary Key (hex encoded long):currentnumber/totalnumber
+                 */
+                String messageBody = msgs[i].getMessageBody();
+                messageBody = messageBody.replaceAll("\\s+", " ");
+                if (messageBody.matches(".*C[a-fA-F0-9]+:[ 0-9]+/[ 0-9]+:.*")) {
+                    Log.d("WTF-RECEIVER", messageBody);
+                    cortexMessages.add(messageBody);
                 }
+                stringBuilder.append(messageBody).append('\n');
             }
-            Intent smsBackgrounParserIntent = new Intent(context, SmsParserService.class);
-            smsBackgrounParserIntent.putStringArrayListExtra(
-                    Constants.IntentKeys.CORTEX_MESSAGES_RECEIVED, cortexMessages);
-            context.startService(smsBackgrounParserIntent);
-            // Display the entire SMS Message
+
+//            AudioManager aManager = (AudioManager) (context.getSystemService(Context.AUDIO_SERVICE));
+//            aManager.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+
+            if (cortexMessages.size() > 0) {
+                Intent smsBackgrounParserIntent = new Intent(context, SmsParserService.class);
+                smsBackgrounParserIntent.putStringArrayListExtra(
+                        Constants.IntentKeys.CORTEX_MESSAGES_RECEIVED, cortexMessages);
+                context.startService(smsBackgrounParserIntent);
+            }
             Log.d(TAG, stringBuilder.toString());
+
         }
     }
 }

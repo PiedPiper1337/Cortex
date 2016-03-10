@@ -21,9 +21,6 @@ public class RawData extends Model {
     @Column(name = "Answer")
     private String mAnswer;
 
-    @Column(name = "Type")
-    private String mType;
-
     @Column(name = "Finished")
     private boolean mFinished;
 
@@ -52,14 +49,6 @@ public class RawData extends Model {
 
     public String getAnswer() {
         return mAnswer;
-    }
-
-    public void setType(String type) {
-        mType = type;
-    }
-
-    public String getType() {
-        return mType;
     }
 
     public boolean isFinished() {
@@ -104,15 +93,12 @@ public class RawData extends Model {
 
         RawData rawData = (RawData) o;
 
-        if (mId != rawData.mId) return false;
-        return mType.equals(rawData.mType);
-
+        return (mId != rawData.mId);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + mType.hashCode();
         result = 31 * result + (int) (mId ^ (mId >>> 32));
         return result;
     }
@@ -121,7 +107,6 @@ public class RawData extends Model {
     public String toString() {
         return "RawData{" +
                 "mAnswer='" + mAnswer + '\'' +
-                ", mType='" + mType + '\'' +
                 ", mFinished=" + mFinished +
                 ", mId=" + mId +
                 ", mNumMessagesExpected=" + mNumMessagesExpected +
