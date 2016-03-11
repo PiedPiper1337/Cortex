@@ -5,17 +5,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -50,10 +56,11 @@ import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 import piedpiper1337.github.io.cortex.utils.SharedPreferenceUtil;
 import piedpiper1337.github.io.cortex.utils.SimpleItemTouchHelperCallback;
 
+
 /**
  * Created by brianzhao on 2/27/16.
  */
-public class QuestionListFragment extends BaseFragment {
+public class QuestionListFragment extends BaseFragment implements SearchView.OnQueryTextListener {
     private static final String TAG = QuestionListFragment.class.getSimpleName();
     private Context mContext;
     private NavigationCallback mNavigationCallback;
@@ -92,9 +99,6 @@ public class QuestionListFragment extends BaseFragment {
         questionTypeToLetterMap.put(Constants.SMS_TYPE.QUESTION_TYPE, "Q");
         questionTypeToLetterMap.put(Constants.SMS_TYPE.WIKI_TYPE, "W");
         questionTypeToLetterMap.put(Constants.SMS_TYPE.URL_TYPE, "U");
-
-        LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceiver,
-                new IntentFilter("custom-event-name"));
     }
 
     @Override
@@ -106,24 +110,29 @@ public class QuestionListFragment extends BaseFragment {
             @Override
             public void onReceive(Context context, Intent intent) {
                 // Get extra data included in the Intent
-                String message = intent.getStringExtra("message");
-                Log.d("receiver", "Got message: " + message);
-                List<RawData> rawDataList = new Select().from(RawData.class).where("Finished = ?", true).execute();
-                for (RawData rawData : rawDataList) {
-                    long id = rawData.getRealId();
-                    SMSQuery smsquery = new Select().from(SMSQuery.class).where("Id = ?", id).executeSingle();
-                    smsquery.setAnswer(rawData.getAnswer());
-                    smsquery.updateDate();
-                    smsquery.save();
-
-                    rawData.delete();
-                }
+//                String message = intent.getStringExtra("message");
+//                Log.d("receiver", "Got message: " + message);
                 updateUI();
             }
         };
-
+        setHasOptionsMenu(true);
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceiver,
-                new IntentFilter("custom-event-name"));
+                new IntentFilter(Constants.IntentKeys.CORTEX_MESSAGES_DB_UPDATED));
+    }
+
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        inflater.inflate(R.menu.menu_base, menu);
+//        final MenuItem item = menu.findItem(R.id.search);
+////        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+////        searchView.setOnQueryTextListener(this);
+//    }
+
+
+    //TODO for search
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -156,57 +165,22 @@ public class QuestionListFragment extends BaseFragment {
             }
         });
 
-
-
-
-
         mRecyclerView = (RecyclerView) view.findViewById(R.id.question_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-
-        updateUI();
-
-//        mFloatingActionsMenu.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                //TODO make this like google hangouts, where you choose the type of question
-////                https://github.com/Clans/FloatingActionButton
-//                mNavigationCallback.askQuestion(Constants.SMS_TYPE.QUESTION_TYPE);
-//            }
-//        });
-
         //TODO add items to the drawer
-        Drawer drawer = new DrawerBuilder()
-                .withActivity((Activity) mContext)
-                .withToolbar(mToolbar)
-                .buildForFragment();
-
-//        //asynchronously check for finished rawdata, then move them to appropriate table, + re-query
-//        new AsyncTask<Void, Void, Long>() {
-//
-//            @Override
-//            protected Long doInBackground(Void... params) {
-//                List<RawData> rawDataList = new Select().from(RawData.class).where("Finished = ?", true).execute();
-//                for (RawData rawData : rawDataList) {
-//                    long id = rawData.getRealId();
-//                    SMSQuery smsquery = new Select().from(SMSQuery.class).where("Id = ?", id).executeSingle();
-//                    smsquery.setAnswer(rawData.getAnswer());
-//                    smsquery.updateDate();
-//                    smsquery.save();
-//
-//                    rawData.delete();
-//                }
-//                return null;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(Long result) {
-//                updateUI();
-//            }
-//        }.execute();
-
+//        Drawer drawer = new DrawerBuilder()
+//                .withActivity((Activity) mContext)
+//                .withToolbar(mToolbar)
+//                .buildForFragment();
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
     }
 
     @Override
@@ -242,7 +216,10 @@ public class QuestionListFragment extends BaseFragment {
                 if (previousPosition != -1) {
                     mRecyclerView.scrollToPosition(previousPosition);
                 }
-                SharedPreferenceUtil.clearPreferences(mContext);
+                SharedPreferenceUtil.savePreference(mContext,
+                        Constants.SharedPreferenceKeys.RECYCLER_VIEW_POSITION,
+                        -1
+                );
                 swapToRecyclerView();
             }
         } else {
@@ -275,8 +252,17 @@ public class QuestionListFragment extends BaseFragment {
         return TAG;
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        return false;
+    }
+
     /**
-     * TODO add round button support
      * https://github.com/amulyakhare/TextDrawable
      */
     public class QuestionHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -302,14 +288,21 @@ public class QuestionListFragment extends BaseFragment {
             //TODO map questions to colors
 //            Random rnd = new Random();
 //            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
-//            int color = mColorGenerator.getColor(question.getType());
-            int color = mColorGenerator.getRandomColor();
+//            int color = mColorGenerator.getRandomColor();
+            int color = mColorGenerator.getColor(question.getType().hashCode() * 7);
+
             TextDrawable drawable = TextDrawable.builder()
                     .buildRound(questionTypeToLetterMap.get(question.getType()), color);
             mImageView.setImageDrawable(drawable);
 
             String answer = question.getAnswer();
+
+
             if (answer != null && !answer.isEmpty()) {
+                answer = answer.replaceAll("\\s+", " ").trim();
+                if (answer.length() > 100) {
+                    answer = answer.substring(0, 40) + "...";
+                }
                 mAnswerTextView.setText(answer);
             } else {
                 mAnswerTextView.setText(R.string.answer_not_arrived_yet);
@@ -370,6 +363,7 @@ public class QuestionListFragment extends BaseFragment {
                     .setActionTextColor(ContextCompat.getColor(mContext, R.color.lightOrange))
                     .setCallback(new Snackbar.Callback() {
                         private float mHeight;
+
                         @Override
                         public void onDismissed(Snackbar snackbar, int event) {
                             switch (event) {
@@ -407,7 +401,7 @@ public class QuestionListFragment extends BaseFragment {
                         @Override
                         public void onShown(Snackbar snackbar) {
                             mHeight = snackbar.getView().getHeight();
-                            Animation animation = new TranslateAnimation(0, 0,0, -mHeight * 0.8f);
+                            Animation animation = new TranslateAnimation(0, 0, 0, -mHeight * 0.8f);
                             animation.setDuration(50);
                             animation.setFillAfter(true);
                             mFloatingActionsMenu.startAnimation(animation);

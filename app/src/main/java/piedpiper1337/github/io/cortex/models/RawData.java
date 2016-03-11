@@ -21,9 +21,6 @@ public class RawData extends Model {
     @Column(name = "Answer")
     private String mAnswer;
 
-    @Column(name = "Type")
-    private String mType;
-
     @Column(name = "Finished")
     private boolean mFinished;
 
@@ -34,16 +31,16 @@ public class RawData extends Model {
     private int mNumMessagesExpected;
 
     //this is json
+    //this is actually integer to string mapping
     @Column(name = "CurrentlyReceivedMessages")
-    private HashMap<Integer, String> mCurrentlyReceivedMessagesMap;
+    private HashMap<String, String> mCurrentlyReceivedMessagesMap;
 
     public RawData() {
         super();
     }
 
-    public RawData(long id, String type) {
+    public RawData(long id) {
         mId = id;
-        mType = type;
     }
 
     public void setAnswer(String answer) {
@@ -52,14 +49,6 @@ public class RawData extends Model {
 
     public String getAnswer() {
         return mAnswer;
-    }
-
-    public void setType(String type) {
-        mType = type;
-    }
-
-    public String getType() {
-        return mType;
     }
 
     public boolean isFinished() {
@@ -87,11 +76,11 @@ public class RawData extends Model {
     }
 
 
-    public HashMap<Integer, String> getCurrentlyReceivedMessagesMap() {
+    public HashMap<String, String> getCurrentlyReceivedMessagesMap() {
         return mCurrentlyReceivedMessagesMap;
     }
 
-    public void setCurrentlyReceivedMessagesMap(HashMap<Integer, String> currentlyReceivedMessagesMap) {
+    public void setCurrentlyReceivedMessagesMap(HashMap<String, String> currentlyReceivedMessagesMap) {
         mCurrentlyReceivedMessagesMap = currentlyReceivedMessagesMap;
     }
 
@@ -104,15 +93,12 @@ public class RawData extends Model {
 
         RawData rawData = (RawData) o;
 
-        if (mId != rawData.mId) return false;
-        return mType.equals(rawData.mType);
-
+        return (mId != rawData.mId);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + mType.hashCode();
         result = 31 * result + (int) (mId ^ (mId >>> 32));
         return result;
     }
@@ -121,7 +107,6 @@ public class RawData extends Model {
     public String toString() {
         return "RawData{" +
                 "mAnswer='" + mAnswer + '\'' +
-                ", mType='" + mType + '\'' +
                 ", mFinished=" + mFinished +
                 ", mId=" + mId +
                 ", mNumMessagesExpected=" + mNumMessagesExpected +

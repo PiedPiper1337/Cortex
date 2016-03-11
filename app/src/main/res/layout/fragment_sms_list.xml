@@ -5,9 +5,9 @@
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinatorLayout"
     >
-
 
     <LinearLayout
         android:id="@+id/sms_list_foreground_layout"
@@ -38,6 +38,7 @@
             android:fadeScrollbars="true"
             android:orientation="vertical"
             android:scrollbars="vertical"
+            tools:listitem="@layout/list_item_question"
             >
 
         </android.support.v7.widget.RecyclerView>
@@ -52,7 +53,7 @@
 
 
             <TextView
-                android:paddingBottom="40dp"
+                android:paddingBottom="60dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -72,10 +73,11 @@
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_gravity="bottom|right|end"-->
         <!--android:layout_margin="@dimen/fab_margin"-->
-        <!--android:src="@android:drawable/ic_input_add"-->
+        <!--android:src="@android:drawable/ic_input_add"    -->
         <!--android:tint="#FFFFFF"-->
         <!--app:backgroundTint="#2b82c4"-->
         <!--/>-->
+
 
 
 
@@ -86,6 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
+
             fab:fab_addButtonColorNormal="@color/fabColor"
             fab:fab_addButtonColorPressed="@color/fabColorPressed"
             fab:fab_addButtonPlusIconColor="@color/white"

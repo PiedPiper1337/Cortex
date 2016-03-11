@@ -24,4 +24,5 @@
     <string name="your_questions">Your Questions</string>
     <string name="wiki_hint">Please enter the subject you would like to look up in wikipedia.</string>
     <string name="wiki_lookup_fragment_title">Wikipedia Lookup</string>
+    <string name="search">Search</string>
 </resources>
