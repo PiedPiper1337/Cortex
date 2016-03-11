@@ -109,5 +109,4 @@ public class QuestionPagerFragment extends BaseFragment {
         return false;
     }
 
-
 }
