@@ -1,10 +1,7 @@
 package piedpiper1337.github.io.cortex.activities;
 
 import android.app.FragmentManager;
-import android.content.Context;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.Menu;
 
 import java.util.List;
@@ -13,7 +10,7 @@ import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.fragments.QuestionListFragment;
 import piedpiper1337.github.io.cortex.fragments.QuestionPagerFragment;
 import piedpiper1337.github.io.cortex.fragments.SmsQuestionFragment;
-import piedpiper1337.github.io.cortex.utils.SMSQueryable;
+import piedpiper1337.github.io.cortex.models.SMSQueryable;
 
 public class HomeActivity extends BaseActivity implements NavigationCallback {
     private static final String TAG = HomeActivity.class.getCanonicalName();

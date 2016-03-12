@@ -5,13 +5,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -19,8 +17,6 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +33,6 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.DrawerBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,11 +42,10 @@ import java.util.Map;
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.HomeActivity;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
-import piedpiper1337.github.io.cortex.models.RawData;
 import piedpiper1337.github.io.cortex.models.SMSQuery;
 import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.utils.ItemTouchHelperAdapter;
-import piedpiper1337.github.io.cortex.utils.SMSQueryable;
+import piedpiper1337.github.io.cortex.models.SMSQueryable;
 import piedpiper1337.github.io.cortex.utils.SharedPreferenceUtil;
 import piedpiper1337.github.io.cortex.utils.SimpleItemTouchHelperCallback;
 
@@ -73,6 +66,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
     private List<SMSQueryable> mQuestionList;
     private Toolbar mToolbar;
     private Map<String, String> questionTypeToLetterMap;
+    private Map<String, Integer> questionTypeToColorMap;
     private BroadcastReceiver mReceiver;
 
     private static final String QUESTION_TYPE = "io.github.piedpiper1337.cortex.QUESTION_TYPE";
@@ -95,10 +89,6 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         } else {
             throw new RuntimeException("activity doesn't implement navigation callback");
         }
-        questionTypeToLetterMap = new HashMap<>();
-        questionTypeToLetterMap.put(Constants.SMS_TYPE.QUESTION_TYPE, "Q");
-        questionTypeToLetterMap.put(Constants.SMS_TYPE.WIKI_TYPE, "W");
-        questionTypeToLetterMap.put(Constants.SMS_TYPE.URL_TYPE, "U");
     }
 
     @Override
@@ -109,15 +99,22 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                // Get extra data included in the Intent
-//                String message = intent.getStringExtra("message");
-//                Log.d("receiver", "Got message: " + message);
                 updateUI();
             }
         };
         setHasOptionsMenu(true);
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceiver,
                 new IntentFilter(Constants.IntentKeys.CORTEX_MESSAGES_DB_UPDATED));
+
+        questionTypeToLetterMap = new HashMap<>();
+        questionTypeToLetterMap.put(Constants.SMS_TYPE.QUESTION_TYPE, "Q");
+        questionTypeToLetterMap.put(Constants.SMS_TYPE.WIKI_TYPE, "W");
+        questionTypeToLetterMap.put(Constants.SMS_TYPE.URL_TYPE, "U");
+
+        questionTypeToColorMap = new HashMap<>();
+        questionTypeToColorMap.put(Constants.SMS_TYPE.QUESTION_TYPE, 9);
+        questionTypeToColorMap.put(Constants.SMS_TYPE.WIKI_TYPE, 13);
+        questionTypeToColorMap.put(Constants.SMS_TYPE.URL_TYPE, 5);
     }
 
 //    @Override
@@ -203,7 +200,6 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         if (mQuestionList != null) {
             if (mQuestionList.size() == 0) {
                 swapToBackgroundView();
-
             } else {
                 QuestionAdapter questionAdapter = new QuestionAdapter(mQuestionList);
                 ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(questionAdapter);
@@ -289,7 +285,10 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
 //            Random rnd = new Random();
 //            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 //            int color = mColorGenerator.getRandomColor();
-            int color = mColorGenerator.getColor(question.getType().hashCode() * 7);
+
+//            int color = mColorGenerator.getColor(question.getType().hashCode() * 7);
+            int color = mColorGenerator.getColor(questionTypeToColorMap.get(question.getType()));
+            //5,6,13,14 look alright
 
             TextDrawable drawable = TextDrawable.builder()
                     .buildRound(questionTypeToLetterMap.get(question.getType()), color);

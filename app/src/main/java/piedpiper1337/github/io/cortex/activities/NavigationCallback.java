@@ -2,7 +2,7 @@ package piedpiper1337.github.io.cortex.activities;
 
 import java.util.List;
 
-import piedpiper1337.github.io.cortex.utils.SMSQueryable;
+import piedpiper1337.github.io.cortex.models.SMSQueryable;
 
 /**
  * Created by brianzhao on 2/11/16.

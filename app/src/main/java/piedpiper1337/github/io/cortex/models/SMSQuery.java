@@ -11,8 +11,6 @@ import com.activeandroid.annotation.Table;
 
 import java.io.Serializable;
 
-import piedpiper1337.github.io.cortex.utils.SMSQueryable;
-
 /**
  * SugarRecords do not have an ID value until they are saved into the DB, so the actual
  * question text message has to be sent after this record is saved, so that the ID is
@@ -63,5 +61,9 @@ public class SMSQuery extends Model implements Serializable, SMSQueryable {
 
     public void updateDate() {
         mDate = System.currentTimeMillis();
+    }
+
+    public long getDate() {
+        return mDate;
     }
 }

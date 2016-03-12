@@ -6,8 +6,6 @@ import com.activeandroid.annotation.Table;
 
 import java.util.HashMap;
 
-import piedpiper1337.github.io.cortex.utils.SMSQueryable;
-
 /**
  * Created by brianzhao on 2/28/16.
  */
