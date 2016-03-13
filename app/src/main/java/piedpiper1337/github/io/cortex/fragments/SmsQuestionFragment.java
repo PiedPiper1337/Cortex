@@ -17,11 +17,12 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v13.app.FragmentCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -208,18 +209,30 @@ public class SmsQuestionFragment extends BaseFragment {
         });
 
         mToolbar = (Toolbar) view.findViewById(R.id.question_toolbar);
-        ((HomeActivity) mContext).setSupportActionBar(mToolbar);
 
+
+        ((HomeActivity) mContext).setSupportActionBar(mToolbar);
+        ActionBar actionBar = ((HomeActivity) mContext).getSupportActionBar();
 
         if (mQuestionType.equals(Constants.SMS_TYPE.QUESTION_TYPE)) {
             mEditText.setHint(R.string.question_hint);
-            ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.question_fragment_title);
+            actionBar.setTitle(R.string.question_fragment_title);
         } else if (mQuestionType.equals(Constants.SMS_TYPE.WIKI_TYPE)) {
             mEditText.setHint(R.string.wiki_hint);
-            ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.wiki_lookup_fragment_title);
+            actionBar.setTitle(R.string.wiki_lookup_fragment_title);
         }
+
+
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            ((HomeActivity)mContext).onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public String getTagName() {

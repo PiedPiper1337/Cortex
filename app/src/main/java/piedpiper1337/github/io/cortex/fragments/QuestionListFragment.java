@@ -142,9 +142,6 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         }
         searchView.setOnQueryTextListener(QuestionListFragment.this);
 
-
-
-
 //        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
 //        searchView.setOnQueryTextListener(this);
     }
@@ -163,8 +160,12 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         mBackgroundLayout = (RelativeLayout) view.findViewById(R.id.question_list_background_relative_layout);
         mForegroundLayout = (LinearLayout) view.findViewById(R.id.sms_list_foreground_layout);
         mToolbar = (Toolbar) view.findViewById(R.id.fragment_sms_list_toolbar);
+
+
         ((HomeActivity) mContext).setSupportActionBar(mToolbar);
         ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.app_name);
+
+
 
         mFloatingActionsMenu = (FloatingActionsMenu) view.findViewById(R.id.send_actions);
         mFloatingQuestionButton = (FloatingActionButton) view.findViewById(R.id.fab_ask_question);
@@ -299,11 +300,11 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         for (SMSQueryable model : models) {
             final String text = model.getQuestion().toLowerCase() + model.getAnswer().toLowerCase();
             if (text.contains(query)) {
-                Log.d("WTF", "query hit:\n" + text);
+                Log.d(getTagName(), "query hit:\n" + text);
                 filteredModelList.add(model);
             }
         }
-        Log.d("WTF", filteredModelList.size() + "");
+        Log.d(getTagName(), filteredModelList.size() + "");
         return filteredModelList;
     }
 
@@ -400,7 +401,6 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         public SMSQueryable removeItem(int position){
             final SMSQueryable smsQueryable = mQuestions.remove(position);
             notifyItemRemoved(position);
-            Log.d("WTF", "ITEM REMOVED!");
             return smsQueryable;
         }
 
@@ -448,7 +448,6 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         }
 
         public void animateTo(List<SMSQueryable> models) {
-            Log.d("WTF", models.size()+"");
             applyAndAnimateRemovals(models);
             applyAndAnimateAdditions(models);
             applyAndAnimateMovedItems(models);

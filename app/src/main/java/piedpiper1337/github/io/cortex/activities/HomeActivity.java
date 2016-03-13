@@ -2,7 +2,9 @@ package piedpiper1337.github.io.cortex.activities;
 
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import java.util.List;
 
@@ -21,11 +23,33 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
         setContentView(R.layout.activity_base);
         initUI();
 
+//        https://stackoverflow.com/questions/13964409/why-fragmentmanagers-getbackstackentrycount-return-zero
+//        https://stackoverflow.com/questions/13086840/actionbar-up-navigation-with-fragments
+        getFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                int stackHeight = getFragmentManager().getBackStackEntryCount();
+                Log.d("WTF", stackHeight + "");
+                if (stackHeight > 0) { // if we have something on the stack (doesn't include the current shown fragment)
+                    getSupportActionBar().setHomeButtonEnabled(true);
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                } else {
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                    getSupportActionBar().setHomeButtonEnabled(false);
+                }
+            }
+        });
+    }
 
-
-//        List<RawData> rawDatas = new Select().from(RawData.class).execute();
-//        Log.d("WTF!!!", rawDatas.toString());
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public void initUI() {
@@ -64,6 +88,7 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
 //                        R.animator.fade_in_fast, R.animator.fade_out_fast)
                 .replace(R.id.fragment_container, questionPagerFragment , "questionPagerFragment")
                 .addToBackStack(null)
+
                 .commit();
     }
 
@@ -103,6 +128,8 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
             super.onBackPressed();
         }
     }
+
+
 
     @Override
     public String getTag() {
