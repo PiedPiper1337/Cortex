@@ -22,7 +22,7 @@
     <string name="undo">UNDO</string>
     <string name="retry_sms">Answer has not arrived yet...Long press to retry</string>
     <string name="your_questions">Your Questions</string>
-    <string name="wiki_hint">Please enter the subject you would like to look up in wikipedia.</string>
+    <string name="wiki_hint">Please enter the subject you would like to look up in wikipedia.\n\nFor example, try typing \"AlphaGo\" and clicking the "send" button. </string>
     <string name="wiki_lookup_fragment_title">Wikipedia Lookup</string>
     <string name="search">Search</string>
     <string name="donate">Donate</string>

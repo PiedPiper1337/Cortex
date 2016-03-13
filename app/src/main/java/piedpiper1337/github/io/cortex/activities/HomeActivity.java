@@ -63,18 +63,6 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-//            case R.id.carrier:
-//                showCarrierDialog(new DialogCallback() {
-//                    @Override
-//                    public void onCarrierDialogComplete(String carrier) {
-//                        Toast.makeText(HomeActivity.this, "Texts from Cortex will now be directed to " + carrier, Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//                return true;
-//            case R.id.donate:
-//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com/your_paypal"));
-//                startActivity(browserIntent);
-//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

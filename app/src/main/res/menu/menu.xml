@@ -6,15 +6,15 @@
         android:title="@string/search"
         app:actionViewClass="android.support.v7.widget.SearchView"
         app:showAsAction="always" />
-    <!--<item-->
-    <!--android:id="@+id/donate"-->
-    <!--android:title="@string/donate"-->
-    <!--app:showAsAction="never"-->
-    <!--/>-->
 
     <item
         android:id="@+id/carrier"
         android:title="@string/change_carrier_info"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/donate"
+        android:title="@string/donate"
         app:showAsAction="never" />
 
 

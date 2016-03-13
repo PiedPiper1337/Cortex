@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -159,10 +160,10 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
                     }
                 });
                 return true;
-//            case R.id.donate:
-//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com/your_paypal"));
-//                startActivity(browserIntent);
-//                return true;
+            case R.id.donate:
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.PAYPAL_DONATE));
+                startActivity(browserIntent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
