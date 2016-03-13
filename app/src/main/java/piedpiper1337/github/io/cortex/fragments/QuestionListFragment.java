@@ -68,6 +68,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
     private RecyclerView mRecyclerView;
     private RelativeLayout mBackgroundLayout;
     private LinearLayout mForegroundLayout;
+    private LinearLayout mWhiteFilterLayout;
     private FloatingActionsMenu mFloatingActionsMenu;
     private FloatingActionButton mFloatingQuestionButton;
     private FloatingActionButton mFloatingWikiButton;
@@ -171,6 +172,8 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         View view = inflater.inflate(R.layout.fragment_sms_list, container, false);
         mBackgroundLayout = (RelativeLayout) view.findViewById(R.id.question_list_background_relative_layout);
         mForegroundLayout = (LinearLayout) view.findViewById(R.id.sms_list_foreground_layout);
+        mWhiteFilterLayout = (LinearLayout) view.findViewById(R.id.white_filter);
+
         mToolbar = (Toolbar) view.findViewById(R.id.fragment_sms_list_toolbar);
 
 
@@ -182,6 +185,26 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         mFloatingQuestionButton = (FloatingActionButton) view.findViewById(R.id.fab_ask_question);
         mFloatingWikiButton = (FloatingActionButton) view.findViewById(R.id.fab_wiki_lookup);
 
+
+        mFloatingActionsMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
+            @Override
+            public void onMenuExpanded() {
+                mWhiteFilterLayout.setVisibility(View.VISIBLE);
+                mWhiteFilterLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mWhiteFilterLayout.setVisibility(View.GONE);
+                        mFloatingActionsMenu.toggle();
+                    }
+                });
+            }
+
+            @Override
+            public void onMenuCollapsed() {
+                mWhiteFilterLayout.setVisibility(View.GONE);
+
+            }
+        });
 
         mFloatingQuestionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -288,20 +311,26 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        final List<SMSQueryable> filteredModelList = filter(mQuestionList, query);
-        mAdapter.animateTo(filteredModelList);
-        mRecyclerView.scrollToPosition(0);
-        return true;
+        if (mQuestionList != null && mQuestionList.size() > 0) {
+            final List<SMSQueryable> filteredModelList = filter(mQuestionList, query);
+            mAdapter.animateTo(filteredModelList);
+            mRecyclerView.scrollToPosition(0);
+            return true;
+        }
+        return false;
     }
 
     //    https://stackoverflow.com/questions/18705185/changing-the-cursor-color-in-searchview-without-actionbarsherlock
 //    https://stackoverflow.com/questions/27730253/how-to-style-the-cursor-color-of-searchview-under-appcompat
     @Override
     public boolean onQueryTextChange(String newText) {
-        final List<SMSQueryable> filteredModelList = filter(mQuestionList, newText);
-        mAdapter.animateTo(filteredModelList);
-        mRecyclerView.scrollToPosition(0);
-        return true;
+        if (mQuestionList != null && mQuestionList.size() > 0) {
+            final List<SMSQueryable> filteredModelList = filter(mQuestionList, newText);
+            mAdapter.animateTo(filteredModelList);
+            mRecyclerView.scrollToPosition(0);
+            return true;
+        }
+        return false;
     }
 
     private List<SMSQueryable> filter(List<SMSQueryable> models, String query) {
@@ -468,6 +497,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         @Override
         public void onItemDismiss(final int position) {
             final SMSQueryable toBeDeleted = mQuestions.remove(position);
+            mQuestionList.remove(toBeDeleted);
             notifyItemRemoved(position);
 
             final Snackbar snackbar = Snackbar
@@ -497,6 +527,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
                                 case DISMISS_EVENT_MANUAL:
                                     //restore
                                     mQuestions.add(position, toBeDeleted);
+                                    mQuestionList.add(toBeDeleted);
                                     if (mQuestions.size() == 1) {
                                         swapToRecyclerView();
                                     }

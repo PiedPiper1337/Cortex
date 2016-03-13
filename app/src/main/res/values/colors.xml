@@ -16,6 +16,7 @@
 
     <color name="border_color">#66CCCCCC</color>
     <color name="white">#FFFFFF</color>
+    <color name="whiteTransparent">#CCFFFFFF</color>
     <color name="white_pressed">#FFEEEEEE</color>
     <color name="half_black">#222222</color>
 
