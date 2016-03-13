@@ -12,9 +12,8 @@ import android.support.v13.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -66,6 +65,19 @@ public class QuestionPagerFragment extends BaseFragment {
         QuestionPagerFragment fragment = new QuestionPagerFragment();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    //    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        MenuItem search = menu.findItem(R.id.search);
+//        search.setVisible(false);
+//        search.setEnabled(false);
+//    }
+
+    //    https://stackoverflow.com/questions/23178663/hide-show-action-bar-option-menu-item-for-different-fragments
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.search).setVisible(false).setEnabled(false);
     }
 
     @Override
@@ -149,6 +161,8 @@ public class QuestionPagerFragment extends BaseFragment {
         ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.your_questions);
 
     }
+
+
 
     @Override
     public void onResume() {

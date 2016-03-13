@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/search"
+        android:icon="@drawable/magnify"
+        android:title="@string/search"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="always" />
+    <!--<item-->
+    <!--android:id="@+id/donate"-->
+    <!--android:title="@string/donate"-->
+    <!--app:showAsAction="never"-->
+    <!--/>-->
+
+    <item
+        android:id="@+id/carrier"
+        android:title="@string/change_carrier_info"
+        app:showAsAction="never" />
+
+
+</menu>
+
+
+    <!--android:icon="@android:drawable/ic_menu_search"-->

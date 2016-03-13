@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.activeandroid.query.Select;
 import com.amulyakhare.textdrawable.TextDrawable;
@@ -48,9 +49,9 @@ import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.HomeActivity;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
 import piedpiper1337.github.io.cortex.models.SMSQuery;
+import piedpiper1337.github.io.cortex.models.SMSQueryable;
 import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.utils.ItemTouchHelperAdapter;
-import piedpiper1337.github.io.cortex.models.SMSQueryable;
 import piedpiper1337.github.io.cortex.utils.SharedPreferenceUtil;
 import piedpiper1337.github.io.cortex.utils.SimpleItemTouchHelperCallback;
 
@@ -121,15 +122,18 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         questionTypeToColorMap.put(Constants.SMS_TYPE.QUESTION_TYPE, 9);
         questionTypeToColorMap.put(Constants.SMS_TYPE.WIKI_TYPE, 13);
         questionTypeToColorMap.put(Constants.SMS_TYPE.URL_TYPE, 5);
+        setHasOptionsMenu(true);
     }
 
-//    https://stackoverflow.com/questions/30398247/how-to-filter-a-recyclerview-with-a-searchview
+    //    https://stackoverflow.com/questions/30398247/how-to-filter-a-recyclerview-with-a-searchview
 //    https://stackoverflow.com/questions/18438890/menuitemcompat-getactionview-always-returns-null
 //    https://stackoverflow.com/questions/32287938/change-cursor-color-of-searchview
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_search, menu);
+        menu.clear();
+        inflater.inflate(R.menu.menu, menu);
         final MenuItem item = menu.findItem(R.id.search);
+        item.setVisible(true);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
 
         AutoCompleteTextView searchTextView = (AutoCompleteTextView) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
@@ -142,17 +146,28 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         }
         searchView.setOnQueryTextListener(QuestionListFragment.this);
 
-//        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
-//        searchView.setOnQueryTextListener(this);
     }
 
-
-
-    //TODO for search
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.carrier:
+                ((HomeActivity) mContext).showCarrierDialog(new HomeActivity.DialogCallback() {
+                    @Override
+                    public void onCarrierDialogComplete(String carrier) {
+                        Toast.makeText(mContext, "Texts from Cortex will now be directed to " + carrier, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return true;
+//            case R.id.donate:
+//                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com/your_paypal"));
+//                startActivity(browserIntent);
+//                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -164,7 +179,6 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
 
         ((HomeActivity) mContext).setSupportActionBar(mToolbar);
         ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.app_name);
-
 
 
         mFloatingActionsMenu = (FloatingActionsMenu) view.findViewById(R.id.send_actions);
@@ -283,7 +297,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         return true;
     }
 
-//    https://stackoverflow.com/questions/18705185/changing-the-cursor-color-in-searchview-without-actionbarsherlock
+    //    https://stackoverflow.com/questions/18705185/changing-the-cursor-color-in-searchview-without-actionbarsherlock
 //    https://stackoverflow.com/questions/27730253/how-to-style-the-cursor-color-of-searchview-under-appcompat
     @Override
     public boolean onQueryTextChange(String newText) {
@@ -398,7 +412,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
             holder.bindQuestion(question);
         }
 
-        public SMSQueryable removeItem(int position){
+        public SMSQueryable removeItem(int position) {
             final SMSQueryable smsQueryable = mQuestions.remove(position);
             notifyItemRemoved(position);
             return smsQueryable;
@@ -412,7 +426,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         public void moveItem(int fromPosition, int toPosition) {
             SMSQueryable smsQueryable = mQuestions.remove(fromPosition);
             mQuestions.add(toPosition, smsQueryable);
-            notifyItemMoved(fromPosition,toPosition);
+            notifyItemMoved(fromPosition, toPosition);
         }
 
         public void setQuestions(List<SMSQueryable> smsQueryables) {
@@ -452,7 +466,6 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
             applyAndAnimateAdditions(models);
             applyAndAnimateMovedItems(models);
         }
-
 
 
         @Override

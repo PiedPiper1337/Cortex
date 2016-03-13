@@ -22,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +51,7 @@ import piedpiper1337.github.io.cortex.utils.SmsHandler;
 /**
  * where you ask your question via sms
  */
-public class SmsQuestionFragment extends BaseFragment {
+public class SmsQuestionFragment extends BaseFragment{
     private static final String TAG = SmsQuestionFragment.class.getSimpleName();
     private Context mContext;
     private NavigationCallback mNavigationCallback;
@@ -67,7 +68,6 @@ public class SmsQuestionFragment extends BaseFragment {
     private static final String QUESTION_TYPE = "io.github.piedpiper1337.cortex.QUESTION_TYPE";
     private String mQuestionType;
 
-    private Map<String, String> carrierToCode;
 
 
     public static SmsQuestionFragment newInstance(String questionType) {
@@ -81,13 +81,7 @@ public class SmsQuestionFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (carrierToCode == null) {
-            carrierToCode = new HashMap<>();
-            carrierToCode.put("AT&T", "ATT");
-            carrierToCode.put("SPRINT", "SPR");
-            carrierToCode.put("VERIZON", "VER");
-            carrierToCode.put("TMOBILE", "TMO");
-        }
+        setHasOptionsMenu(false);
     }
 
     @Override
@@ -137,6 +131,12 @@ public class SmsQuestionFragment extends BaseFragment {
         ((HomeActivity) mContext).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         return false;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.search).setVisible(false);
+        super.onPrepareOptionsMenu(menu);
     }
 
     private void requestSMSPermission() {
@@ -225,14 +225,6 @@ public class SmsQuestionFragment extends BaseFragment {
 
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            ((HomeActivity)mContext).onBackPressed();
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     public String getTagName() {
@@ -262,80 +254,19 @@ public class SmsQuestionFragment extends BaseFragment {
             final String carrierName = manager.getNetworkOperatorName();
             String simOperatorName = manager.getSimOperatorName();
 
-            final List<String> carrierOptions = new ArrayList<>(carrierToCode.keySet());
-            String[] carrierOptionsArray = carrierOptions.toArray(new String[carrierOptions.size()]);
-
-//            String possibleCarrier = null;
-//            if (carrierName != null && !carrierName.isEmpty()) {
-//                possibleCarrier = carrierName;
-//            } else if (simOperatorName != null && !simOperatorName.isEmpty()) {
-//                possibleCarrier = simOperatorName;
-//            }
 
             String userSavedCarrier = SharedPreferenceUtil.readPreference(mContext,
                     Constants.SharedPreferenceKeys.CARRIER_NAME, null);
 
-            final StringBuilder toSave = new StringBuilder();
-            int defaultUserSelection = -1;
-//            if (possibleCarrier != null) {
-//                defaultUserSelection = carrierOptions.indexOf(possibleCarrier);
-//            }
-
-
-
             if (userSavedCarrier == null) {
-                // Creating and Building the Dialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                if (defaultUserSelection == -1) {
-                    builder.setTitle("Please choose your carrier so your answer gets back to you.");
-                } else {
-                    builder.setTitle("Please confirm your carrier so your answer gets back to you.");
-                }
-
-
-                builder.setSingleChoiceItems(carrierOptionsArray, defaultUserSelection,
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int item) {
-                                switch (item) {
-                                    case 0:
-                                        toSave.setLength(0);
-                                        toSave.append(carrierOptions.get(0));
-                                        break;
-                                    case 1:
-                                        toSave.setLength(0);
-                                        toSave.append(carrierOptions.get(1));
-                                        break;
-                                    case 2:
-                                        toSave.setLength(0);
-                                        toSave.append(carrierOptions.get(2));
-                                        break;
-                                    case 3:
-                                        toSave.setLength(0);
-                                        toSave.append(carrierOptions.get(3));
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                        });
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                ((HomeActivity)mContext).showCarrierDialog(new HomeActivity.DialogCallback() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String carrier = toSave.toString();
-                        if (carrier.length() > 0) {
-                            dialog.dismiss();
-                            SharedPreferenceUtil.savePreference(
-                                    mContext,
-                                    Constants.SharedPreferenceKeys.CARRIER_NAME,
-                                    carrier);
-                            sendSaveSMSAndReturn(toSend, carrierToCode.get(carrier));
-                        }
+                    public void onCarrierDialogComplete(String carrier) {
+                        sendSaveSMSAndReturn(toSend, Constants.carrierToCode.get(carrier));
                     }
                 });
-                AlertDialog carrierDialog = builder.create();
-                carrierDialog.show();
             } else {
-                sendSaveSMSAndReturn(toSend, carrierToCode.get(userSavedCarrier));
+                sendSaveSMSAndReturn(toSend, Constants.carrierToCode.get(userSavedCarrier));
             }
         }
     }
@@ -346,6 +277,8 @@ public class SmsQuestionFragment extends BaseFragment {
         mSmsHandler.sendSmsQuestion(toSend, id, mQuestionType,carrier);
         ((HomeActivity) mContext).onBackPressed();
     }
+
+
 
     /**
      * Shows OK/Cancel confirmation dialog about camera permission.
