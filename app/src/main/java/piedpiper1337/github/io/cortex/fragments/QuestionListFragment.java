@@ -338,7 +338,10 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
 
         final List<SMSQueryable> filteredModelList = new ArrayList<>();
         for (SMSQueryable model : models) {
-            final String text = model.getQuestion().toLowerCase() + model.getAnswer().toLowerCase();
+            String text = model.getQuestion().toLowerCase();
+            if (model.getAnswer() != null) {
+                text = text + model.getAnswer().toLowerCase();
+            }
             if (text.contains(query)) {
                 Log.d(getTagName(), "query hit:\n" + text);
                 filteredModelList.add(model);
