@@ -48,8 +48,4 @@ public class Constants {
         }
     }
 
-    public static final String PAYPAL_DONATE = "https://www.paypal.me/BrianDev";
-
-
-
 }

@@ -8,8 +8,8 @@ android {
         applicationId "piedpiper1337.github.io.cortex"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 5
-        versionName "1.22"
+        versionCode 6
+        versionName "1.23"
     }
     buildTypes {
         release {

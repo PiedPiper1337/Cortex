@@ -160,10 +160,6 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
                     }
                 });
                 return true;
-            case R.id.donate:
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.PAYPAL_DONATE));
-                startActivity(browserIntent);
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -12,12 +12,6 @@
         android:title="@string/change_carrier_info"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/donate"
-        android:title="@string/donate"
-        app:showAsAction="never" />
-
-
 </menu>
 
 
