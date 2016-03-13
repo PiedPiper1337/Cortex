@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -17,12 +18,15 @@ import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -34,6 +38,7 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -57,6 +62,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
     private static final String TAG = QuestionListFragment.class.getSimpleName();
     private Context mContext;
     private NavigationCallback mNavigationCallback;
+    private QuestionAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private RelativeLayout mBackgroundLayout;
     private LinearLayout mForegroundLayout;
@@ -67,8 +73,8 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
     private Toolbar mToolbar;
     private Map<String, String> questionTypeToLetterMap;
     private Map<String, Integer> questionTypeToColorMap;
-    private BroadcastReceiver mReceiver;
 
+    private BroadcastReceiver mReceiver;
     private static final String QUESTION_TYPE = "io.github.piedpiper1337.cortex.QUESTION_TYPE";
 
 
@@ -117,13 +123,32 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         questionTypeToColorMap.put(Constants.SMS_TYPE.URL_TYPE, 5);
     }
 
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        inflater.inflate(R.menu.menu_base, menu);
-//        final MenuItem item = menu.findItem(R.id.search);
-////        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
-////        searchView.setOnQueryTextListener(this);
-//    }
+//    https://stackoverflow.com/questions/30398247/how-to-filter-a-recyclerview-with-a-searchview
+//    https://stackoverflow.com/questions/18438890/menuitemcompat-getactionview-always-returns-null
+//    https://stackoverflow.com/questions/32287938/change-cursor-color-of-searchview
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_search, menu);
+        final MenuItem item = menu.findItem(R.id.search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+
+        AutoCompleteTextView searchTextView = (AutoCompleteTextView) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        try {
+            Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
+            mCursorDrawableRes.setAccessible(true);
+            mCursorDrawableRes.set(searchTextView, R.drawable.cursor); //This sets the cursor resource ID to 0 or @null which will make it visible on white background
+        } catch (Exception e) {
+            Log.e(getTagName(), "Exception when using reflection on cursor color", e);
+        }
+        searchView.setOnQueryTextListener(QuestionListFragment.this);
+
+
+
+
+//        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+//        searchView.setOnQueryTextListener(this);
+    }
+
 
 
     //TODO for search
@@ -202,6 +227,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
                 swapToBackgroundView();
             } else {
                 QuestionAdapter questionAdapter = new QuestionAdapter(mQuestionList);
+                mAdapter = questionAdapter;
                 ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(questionAdapter);
                 ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
                 touchHelper.attachToRecyclerView(mRecyclerView);
@@ -250,12 +276,35 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return false;
+        final List<SMSQueryable> filteredModelList = filter(mQuestionList, query);
+        mAdapter.animateTo(filteredModelList);
+        mRecyclerView.scrollToPosition(0);
+        return true;
     }
 
+//    https://stackoverflow.com/questions/18705185/changing-the-cursor-color-in-searchview-without-actionbarsherlock
+//    https://stackoverflow.com/questions/27730253/how-to-style-the-cursor-color-of-searchview-under-appcompat
     @Override
     public boolean onQueryTextChange(String newText) {
-        return false;
+        final List<SMSQueryable> filteredModelList = filter(mQuestionList, newText);
+        mAdapter.animateTo(filteredModelList);
+        mRecyclerView.scrollToPosition(0);
+        return true;
+    }
+
+    private List<SMSQueryable> filter(List<SMSQueryable> models, String query) {
+        query = query.toLowerCase();
+
+        final List<SMSQueryable> filteredModelList = new ArrayList<>();
+        for (SMSQueryable model : models) {
+            final String text = model.getQuestion().toLowerCase() + model.getAnswer().toLowerCase();
+            if (text.contains(query)) {
+                Log.d("WTF", "query hit:\n" + text);
+                filteredModelList.add(model);
+            }
+        }
+        Log.d("WTF", filteredModelList.size() + "");
+        return filteredModelList;
     }
 
     /**
@@ -291,6 +340,9 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
             //5,6,13,14 look alright
 
             TextDrawable drawable = TextDrawable.builder()
+                    .beginConfig()
+                    .bold()
+                    .endConfig()
                     .buildRound(questionTypeToLetterMap.get(question.getType()), color);
             mImageView.setImageDrawable(drawable);
 
@@ -324,7 +376,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         private List<SMSQueryable> mQuestions;
 
         public QuestionAdapter(List<SMSQueryable> questions) {
-            mQuestions = questions;
+            mQuestions = new ArrayList<>(questions);
         }
 
         @Override
@@ -344,6 +396,65 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
             SMSQueryable question = mQuestions.get(position);
             holder.bindQuestion(question);
         }
+
+        public SMSQueryable removeItem(int position){
+            final SMSQueryable smsQueryable = mQuestions.remove(position);
+            notifyItemRemoved(position);
+            Log.d("WTF", "ITEM REMOVED!");
+            return smsQueryable;
+        }
+
+        public void addItem(int position, SMSQueryable smsQueryable) {
+            mQuestions.add(position, smsQueryable);
+            notifyItemInserted(position);
+        }
+
+        public void moveItem(int fromPosition, int toPosition) {
+            SMSQueryable smsQueryable = mQuestions.remove(fromPosition);
+            mQuestions.add(toPosition, smsQueryable);
+            notifyItemMoved(fromPosition,toPosition);
+        }
+
+        public void setQuestions(List<SMSQueryable> smsQueryables) {
+            mQuestions = new ArrayList<>(smsQueryables);
+        }
+
+        private void applyAndAnimateRemovals(List<SMSQueryable> newModels) {
+            for (int i = mQuestions.size() - 1; i >= 0; i--) {
+                final SMSQueryable model = mQuestions.get(i);
+                if (!newModels.contains(model)) {
+                    removeItem(i);
+                }
+            }
+        }
+
+        private void applyAndAnimateAdditions(List<SMSQueryable> newModels) {
+            for (int i = 0, count = newModels.size(); i < count; i++) {
+                final SMSQueryable model = newModels.get(i);
+                if (!mQuestions.contains(model)) {
+                    addItem(i, model);
+                }
+            }
+        }
+
+        private void applyAndAnimateMovedItems(List<SMSQueryable> newModels) {
+            for (int toPosition = newModels.size() - 1; toPosition >= 0; toPosition--) {
+                final SMSQueryable model = newModels.get(toPosition);
+                final int fromPosition = mQuestions.indexOf(model);
+                if (fromPosition >= 0 && fromPosition != toPosition) {
+                    moveItem(fromPosition, toPosition);
+                }
+            }
+        }
+
+        public void animateTo(List<SMSQueryable> models) {
+            Log.d("WTF", models.size()+"");
+            applyAndAnimateRemovals(models);
+            applyAndAnimateAdditions(models);
+            applyAndAnimateMovedItems(models);
+        }
+
+
 
         @Override
         public void onItemDismiss(final int position) {

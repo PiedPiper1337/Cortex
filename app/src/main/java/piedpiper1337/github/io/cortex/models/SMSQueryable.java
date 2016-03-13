@@ -21,4 +21,6 @@ public interface SMSQueryable extends Serializable{
     public Long getId();
 
     public long getDate();
+
+    public boolean equals(Object obj);
 }

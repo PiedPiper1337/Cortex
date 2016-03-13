@@ -86,24 +86,28 @@ public class QuestionPagerFragment extends BaseFragment {
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                List<SMSQuery> smsQueries = new Select().from(SMSQuery.class).execute();
-                Map<Long, SMSQuery> idToSms = new HashMap<>();
-                for (SMSQuery smsQuery : smsQueries) {
-                    idToSms.put(smsQuery.getId(), smsQuery);
-                }
-                for (int i = 0; i < mQuestions.size(); i++) {
-                    SMSQueryable smsQueryable = mQuestions.get(i);
-                    mQuestions.set(i, idToSms.get(smsQueryable.getId()));
-                }
-                if (mFragmentStatePagerAdapter != null) {
-                    mFragmentStatePagerAdapter.notifyDataSetChanged();
-                    mViewPager.invalidate();
-                }
-
+                updateQuestions();
             }
         };
-
     }
+
+    private void updateQuestions() {
+        List<SMSQuery> smsQueries = new Select().from(SMSQuery.class).execute();
+        Map<Long, SMSQuery> idToSms = new HashMap<>();
+        for (SMSQuery smsQuery : smsQueries) {
+            idToSms.put(smsQuery.getId(), smsQuery);
+        }
+        for (int i = 0; i < mQuestions.size(); i++) {
+            SMSQueryable smsQueryable = mQuestions.get(i);
+            SMSQuery replacement = idToSms.get(smsQueryable.getId());
+            mQuestions.set(i, replacement);
+        }
+        if (mFragmentStatePagerAdapter != null) {
+            mFragmentStatePagerAdapter.notifyDataSetChanged();
+            mViewPager.invalidate();
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -128,7 +132,7 @@ public class QuestionPagerFragment extends BaseFragment {
                 return mQuestions.size();
             }
 
-//            https://stackoverflow.com/questions/10849552/update-viewpager-dynamically
+            //            https://stackoverflow.com/questions/10849552/update-viewpager-dynamically
 //            https://stackoverflow.com/questions/7263291/viewpager-pageradapter-not-updating-the-view
             @Override
             public int getItemPosition(Object object) {

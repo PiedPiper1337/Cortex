@@ -66,4 +66,30 @@ public class SMSQuery extends Model implements Serializable, SMSQueryable {
     public long getDate() {
         return mDate;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        SMSQuery smsQuery = (SMSQuery) o;
+
+        if (mDate != smsQuery.mDate) return false;
+        if (!mQuestion.equals(smsQuery.mQuestion)) return false;
+        if (mAnswer != null ? !mAnswer.equals(smsQuery.mAnswer) : smsQuery.mAnswer != null)
+            return false;
+        return mType.equals(smsQuery.mType);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + mQuestion.hashCode();
+        result = 31 * result + (mAnswer != null ? mAnswer.hashCode() : 0);
+        result = 31 * result + mType.hashCode();
+        result = 31 * result + (int) (mDate ^ (mDate >>> 32));
+        return result;
+    }
 }

@@ -67,12 +67,12 @@ public class HomeActivity extends BaseActivity implements NavigationCallback {
                 .commit();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_base, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_search, menu);
+//        return true;
+//    }
 //
 //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {

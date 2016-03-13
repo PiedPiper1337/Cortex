@@ -64,8 +64,12 @@ public class QuestionFragment extends BaseFragment {
         }else{
             mAnswerTextView.setText(mQuestion.getAnswer());
         }
-
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
