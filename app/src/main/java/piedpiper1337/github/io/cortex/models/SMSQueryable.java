@@ -1,4 +1,4 @@
-package piedpiper1337.github.io.cortex.utils;
+package piedpiper1337.github.io.cortex.models;
 
 import java.io.Serializable;
 
@@ -19,4 +19,8 @@ public interface SMSQueryable extends Serializable{
     public void delete();
 
     public Long getId();
+
+    public long getDate();
+
+    public boolean equals(Object obj);
 }

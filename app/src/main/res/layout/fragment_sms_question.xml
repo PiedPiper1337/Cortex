@@ -144,9 +144,14 @@
         android:foregroundGravity="bottom|right"
         android:layout_margin="@dimen/fab_margin"
         android:src="@android:drawable/ic_menu_send"
-        android:tint="@color/windowBackground"
+        android:scaleType="fitCenter"
         app:backgroundTint="@color/fabColor"
+
         />
+
+    <!--android:tint="@color/windowBackground"-->
+    <!--app:backgroundTint="@color/fabColor"-->
     <!--android:layout_margin="20dp"-->
+    <!--android:src="@android:drawable/ic_menu_send"-->
 
 </FrameLayout>

@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import piedpiper1337.github.io.cortex.R;
-import piedpiper1337.github.io.cortex.utils.SMSQueryable;
+import piedpiper1337.github.io.cortex.models.SMSQueryable;
 import piedpiper1337.github.io.cortex.utils.SmsHandler;
 
 /**
@@ -50,7 +50,8 @@ public class QuestionFragment extends BaseFragment {
 
         mQuestionTextView.setText(mQuestion.getQuestion());
         if (mQuestion.getAnswer() == null || mQuestion.getAnswer().isEmpty()) {
-            mAnswerTextView.setText(R.string.retry_sms);
+            mAnswerTextView.setText(R.string.answer_not_arrived_yet);
+
 //            mAnswerLinearLayout.setOnLongClickListener(new View.OnLongClickListener() {
 //                @Override
 //                public boolean onLongClick(View v) {
@@ -63,8 +64,12 @@ public class QuestionFragment extends BaseFragment {
         }else{
             mAnswerTextView.setText(mQuestion.getAnswer());
         }
-
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override

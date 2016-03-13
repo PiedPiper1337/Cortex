@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.media.AudioManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -27,19 +27,20 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.activeandroid.query.Select;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
-import com.mikepenz.materialdrawer.Drawer;
-import com.mikepenz.materialdrawer.DrawerBuilder;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,11 +49,10 @@ import java.util.Map;
 import piedpiper1337.github.io.cortex.R;
 import piedpiper1337.github.io.cortex.activities.HomeActivity;
 import piedpiper1337.github.io.cortex.activities.NavigationCallback;
-import piedpiper1337.github.io.cortex.models.RawData;
 import piedpiper1337.github.io.cortex.models.SMSQuery;
+import piedpiper1337.github.io.cortex.models.SMSQueryable;
 import piedpiper1337.github.io.cortex.utils.Constants;
 import piedpiper1337.github.io.cortex.utils.ItemTouchHelperAdapter;
-import piedpiper1337.github.io.cortex.utils.SMSQueryable;
 import piedpiper1337.github.io.cortex.utils.SharedPreferenceUtil;
 import piedpiper1337.github.io.cortex.utils.SimpleItemTouchHelperCallback;
 
@@ -64,6 +64,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
     private static final String TAG = QuestionListFragment.class.getSimpleName();
     private Context mContext;
     private NavigationCallback mNavigationCallback;
+    private QuestionAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private RelativeLayout mBackgroundLayout;
     private LinearLayout mForegroundLayout;
@@ -73,8 +74,9 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
     private List<SMSQueryable> mQuestionList;
     private Toolbar mToolbar;
     private Map<String, String> questionTypeToLetterMap;
-    private BroadcastReceiver mReceiver;
+    private Map<String, Integer> questionTypeToColorMap;
 
+    private BroadcastReceiver mReceiver;
     private static final String QUESTION_TYPE = "io.github.piedpiper1337.cortex.QUESTION_TYPE";
 
 
@@ -95,10 +97,6 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         } else {
             throw new RuntimeException("activity doesn't implement navigation callback");
         }
-        questionTypeToLetterMap = new HashMap<>();
-        questionTypeToLetterMap.put(Constants.SMS_TYPE.QUESTION_TYPE, "Q");
-        questionTypeToLetterMap.put(Constants.SMS_TYPE.WIKI_TYPE, "W");
-        questionTypeToLetterMap.put(Constants.SMS_TYPE.URL_TYPE, "U");
     }
 
     @Override
@@ -109,31 +107,68 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                // Get extra data included in the Intent
-//                String message = intent.getStringExtra("message");
-//                Log.d("receiver", "Got message: " + message);
                 updateUI();
             }
         };
         setHasOptionsMenu(true);
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceiver,
                 new IntentFilter(Constants.IntentKeys.CORTEX_MESSAGES_DB_UPDATED));
+
+        questionTypeToLetterMap = new HashMap<>();
+        questionTypeToLetterMap.put(Constants.SMS_TYPE.QUESTION_TYPE, "Q");
+        questionTypeToLetterMap.put(Constants.SMS_TYPE.WIKI_TYPE, "W");
+        questionTypeToLetterMap.put(Constants.SMS_TYPE.URL_TYPE, "U");
+
+        questionTypeToColorMap = new HashMap<>();
+        questionTypeToColorMap.put(Constants.SMS_TYPE.QUESTION_TYPE, 9);
+        questionTypeToColorMap.put(Constants.SMS_TYPE.WIKI_TYPE, 13);
+        questionTypeToColorMap.put(Constants.SMS_TYPE.URL_TYPE, 5);
+        setHasOptionsMenu(true);
     }
 
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        inflater.inflate(R.menu.menu_base, menu);
-//        final MenuItem item = menu.findItem(R.id.search);
-////        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
-////        searchView.setOnQueryTextListener(this);
-//    }
+    //    https://stackoverflow.com/questions/30398247/how-to-filter-a-recyclerview-with-a-searchview
+//    https://stackoverflow.com/questions/18438890/menuitemcompat-getactionview-always-returns-null
+//    https://stackoverflow.com/questions/32287938/change-cursor-color-of-searchview
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.menu, menu);
+        final MenuItem item = menu.findItem(R.id.search);
+        item.setVisible(true);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
 
+        AutoCompleteTextView searchTextView = (AutoCompleteTextView) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+        try {
+            Field mCursorDrawableRes = TextView.class.getDeclaredField("mCursorDrawableRes");
+            mCursorDrawableRes.setAccessible(true);
+            mCursorDrawableRes.set(searchTextView, R.drawable.cursor); //This sets the cursor resource ID to 0 or @null which will make it visible on white background
+        } catch (Exception e) {
+            Log.e(getTagName(), "Exception when using reflection on cursor color", e);
+        }
+        searchView.setOnQueryTextListener(QuestionListFragment.this);
 
-    //TODO for search
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.carrier:
+                ((HomeActivity) mContext).showCarrierDialog(new HomeActivity.DialogCallback() {
+                    @Override
+                    public void onCarrierDialogComplete(String carrier) {
+                        Toast.makeText(mContext, "Texts from Cortex will now be directed to " + carrier, Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return true;
+            case R.id.donate:
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.PAYPAL_DONATE));
+                startActivity(browserIntent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -141,8 +176,11 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         mBackgroundLayout = (RelativeLayout) view.findViewById(R.id.question_list_background_relative_layout);
         mForegroundLayout = (LinearLayout) view.findViewById(R.id.sms_list_foreground_layout);
         mToolbar = (Toolbar) view.findViewById(R.id.fragment_sms_list_toolbar);
+
+
         ((HomeActivity) mContext).setSupportActionBar(mToolbar);
         ((HomeActivity) mContext).getSupportActionBar().setTitle(R.string.app_name);
+
 
         mFloatingActionsMenu = (FloatingActionsMenu) view.findViewById(R.id.send_actions);
         mFloatingQuestionButton = (FloatingActionButton) view.findViewById(R.id.fab_ask_question);
@@ -203,9 +241,9 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         if (mQuestionList != null) {
             if (mQuestionList.size() == 0) {
                 swapToBackgroundView();
-
             } else {
                 QuestionAdapter questionAdapter = new QuestionAdapter(mQuestionList);
+                mAdapter = questionAdapter;
                 ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(questionAdapter);
                 ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
                 touchHelper.attachToRecyclerView(mRecyclerView);
@@ -254,12 +292,35 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return false;
+        final List<SMSQueryable> filteredModelList = filter(mQuestionList, query);
+        mAdapter.animateTo(filteredModelList);
+        mRecyclerView.scrollToPosition(0);
+        return true;
     }
 
+    //    https://stackoverflow.com/questions/18705185/changing-the-cursor-color-in-searchview-without-actionbarsherlock
+//    https://stackoverflow.com/questions/27730253/how-to-style-the-cursor-color-of-searchview-under-appcompat
     @Override
     public boolean onQueryTextChange(String newText) {
-        return false;
+        final List<SMSQueryable> filteredModelList = filter(mQuestionList, newText);
+        mAdapter.animateTo(filteredModelList);
+        mRecyclerView.scrollToPosition(0);
+        return true;
+    }
+
+    private List<SMSQueryable> filter(List<SMSQueryable> models, String query) {
+        query = query.toLowerCase();
+
+        final List<SMSQueryable> filteredModelList = new ArrayList<>();
+        for (SMSQueryable model : models) {
+            final String text = model.getQuestion().toLowerCase() + model.getAnswer().toLowerCase();
+            if (text.contains(query)) {
+                Log.d(getTagName(), "query hit:\n" + text);
+                filteredModelList.add(model);
+            }
+        }
+        Log.d(getTagName(), filteredModelList.size() + "");
+        return filteredModelList;
     }
 
     /**
@@ -289,9 +350,15 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
 //            Random rnd = new Random();
 //            int color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 //            int color = mColorGenerator.getRandomColor();
-            int color = mColorGenerator.getColor(question.getType().hashCode() * 7);
+
+//            int color = mColorGenerator.getColor(question.getType().hashCode() * 7);
+            int color = mColorGenerator.getColor(questionTypeToColorMap.get(question.getType()));
+            //5,6,13,14 look alright
 
             TextDrawable drawable = TextDrawable.builder()
+                    .beginConfig()
+                    .bold()
+                    .endConfig()
                     .buildRound(questionTypeToLetterMap.get(question.getType()), color);
             mImageView.setImageDrawable(drawable);
 
@@ -325,7 +392,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         private List<SMSQueryable> mQuestions;
 
         public QuestionAdapter(List<SMSQueryable> questions) {
-            mQuestions = questions;
+            mQuestions = new ArrayList<>(questions);
         }
 
         @Override
@@ -345,6 +412,62 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
             SMSQueryable question = mQuestions.get(position);
             holder.bindQuestion(question);
         }
+
+        public SMSQueryable removeItem(int position) {
+            final SMSQueryable smsQueryable = mQuestions.remove(position);
+            notifyItemRemoved(position);
+            return smsQueryable;
+        }
+
+        public void addItem(int position, SMSQueryable smsQueryable) {
+            mQuestions.add(position, smsQueryable);
+            notifyItemInserted(position);
+        }
+
+        public void moveItem(int fromPosition, int toPosition) {
+            SMSQueryable smsQueryable = mQuestions.remove(fromPosition);
+            mQuestions.add(toPosition, smsQueryable);
+            notifyItemMoved(fromPosition, toPosition);
+        }
+
+        public void setQuestions(List<SMSQueryable> smsQueryables) {
+            mQuestions = new ArrayList<>(smsQueryables);
+        }
+
+        private void applyAndAnimateRemovals(List<SMSQueryable> newModels) {
+            for (int i = mQuestions.size() - 1; i >= 0; i--) {
+                final SMSQueryable model = mQuestions.get(i);
+                if (!newModels.contains(model)) {
+                    removeItem(i);
+                }
+            }
+        }
+
+        private void applyAndAnimateAdditions(List<SMSQueryable> newModels) {
+            for (int i = 0, count = newModels.size(); i < count; i++) {
+                final SMSQueryable model = newModels.get(i);
+                if (!mQuestions.contains(model)) {
+                    addItem(i, model);
+                }
+            }
+        }
+
+        private void applyAndAnimateMovedItems(List<SMSQueryable> newModels) {
+            for (int toPosition = newModels.size() - 1; toPosition >= 0; toPosition--) {
+                final SMSQueryable model = newModels.get(toPosition);
+                final int fromPosition = mQuestions.indexOf(model);
+                if (fromPosition >= 0 && fromPosition != toPosition) {
+                    moveItem(fromPosition, toPosition);
+                }
+            }
+        }
+
+        public void animateTo(List<SMSQueryable> models) {
+            applyAndAnimateRemovals(models);
+            applyAndAnimateAdditions(models);
+            applyAndAnimateMovedItems(models);
+        }
+
 
         @Override
         public void onItemDismiss(final int position) {
