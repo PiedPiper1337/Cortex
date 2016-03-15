@@ -167,6 +167,7 @@ public class QuestionPagerFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        updateQuestions();
         LocalBroadcastManager.getInstance(mContext).registerReceiver(mReceiver,
                 new IntentFilter(Constants.IntentKeys.CORTEX_MESSAGES_DB_UPDATED));
     }

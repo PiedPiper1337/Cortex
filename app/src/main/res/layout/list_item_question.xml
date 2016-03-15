@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--https://stackoverflow.com/questions/24863430/android-ls-ripple-effect-touch-feedback-for-buttons-using-xml-->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
@@ -7,14 +8,25 @@
               android:background="@color/white"
               android:orientation="vertical"
               >
+    <!--https://stackoverflow.com/questions/24863430/android-ls-ripple-effect-touch-feedback-for-buttons-using-xml-->
+    <!--https://stackoverflow.com/questions/32587249/android-button-ripple-on-lollipop-and-highlight-on-pre-lollipop-->
 
     <LinearLayout
+        android:id="@+id/list_item_foreground_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:orientation="horizontal"
         android:padding="16dp"
+
         >
+        <!--These two will provide ripple effects on touch,
+        but are set programmatically since selectableItemBackground
+        is for preLollipop devices-->
+
+        <!--android:background="?attr/selectableItemBackground"-->
+        <!--"?android:colorControlHighlight"-->
+
+        <!--android:background="@color/white"-->
 
         <ImageView
             android:id="@+id/list_item_question_image_view"

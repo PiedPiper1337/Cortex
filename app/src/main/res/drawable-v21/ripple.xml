@@ -1,0 +1,6 @@
+<ripple
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:colorControlHighlight">
+</ripple>
+
+    <!--https://stackoverflow.com/questions/24863430/android-ls-ripple-effect-touch-feedback-for-buttons-using-xml-->

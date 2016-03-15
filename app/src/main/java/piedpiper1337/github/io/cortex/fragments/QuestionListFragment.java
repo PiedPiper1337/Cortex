@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -18,6 +18,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -351,6 +352,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         return filteredModelList;
     }
 
+
     /**
      * https://github.com/amulyakhare/TextDrawable
      */
@@ -359,15 +361,31 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
         private TextView mAnswerTextView;
         private ImageView mImageView;
         private SMSQueryable mQuestion;
+        private LinearLayout mForegroundLayout;
         private ColorGenerator mColorGenerator;
 
+//        https://stackoverflow.com/questions/8732662/how-to-set-ripple-effect-on-a-linearlayout-programmatically/28087443#28087443
         public QuestionHolder(final View itemView) {
             super(itemView);
             mQuestionTextView = (TextView) itemView.findViewById(R.id.list_item_question_text_view);
             mAnswerTextView = (TextView) itemView.findViewById(R.id.list_item_answer_text_view);
+            mForegroundLayout = (LinearLayout) itemView.findViewById(R.id.list_item_foreground_layout);
             mImageView = (ImageView) itemView.findViewById(R.id.list_item_question_image_view);
+
             mColorGenerator = ColorGenerator.MATERIAL;
             itemView.setOnClickListener(this);
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                // If we're running on lower than lollipop, then we can use the Theme's
+                // selectableItemBackground to ensure that the View has a pressed state
+                Log.d(getTagName(), "using pre-Lollipop ripple effect");
+                TypedValue outValue = new TypedValue();
+                getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
+                mForegroundLayout.setBackgroundResource(outValue.resourceId);
+            } else {
+                Log.d(getTagName(), "using post-Lollipop ripple effect");
+                mForegroundLayout.setBackgroundResource(R.drawable.ripple);
+            }
         }
 
         public void bindQuestion(SMSQueryable question) {
@@ -411,6 +429,7 @@ public class QuestionListFragment extends BaseFragment implements SearchView.OnQ
                     this.getAdapterPosition());
             mNavigationCallback.previewQuestions(mQuestionList, this.getAdapterPosition());
         }
+
     }
 
 
